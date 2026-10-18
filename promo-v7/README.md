@@ -1,0 +1,1 @@
+Text readability revision: translucent dark panels added behind titles on the first three shots. Club photo replacement remains pending: online searches did not identify a suitable Ghana Club-on-ice image. External image reuse permissions remain unconfirmed; see promo-v6/README.md for sources.

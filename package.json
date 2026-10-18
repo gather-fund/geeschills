@@ -1,0 +1,13 @@
+{
+  "name": "gees-chills",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": ">=20.9.0" },
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3018",
+    "build": "next build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": { "next": "16.4.1", "react": "19.3.1", "react-dom": "19.3.1" },
+  "devDependencies": { "typescript": "^5.9.3", "@types/node": "^22.0.0", "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0" }
+}
