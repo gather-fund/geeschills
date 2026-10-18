@@ -49,3 +49,12 @@ The contact details are placeholders. No messages were sent. No deployment or so
 - `node --test tests/enquiries.test.mjs`: passed (validation, missing configuration, recipient protection, mocked success, provider rejection and network failure). All provider calls were mocked; no emails sent.
 - `npm run typecheck` and `npm run build`: passed; /api/enquiries is a dynamic route.
 - Resend verification, Vercel environment variables, deployment and real inbox delivery are pending account setup.
+
+## SEO update — 18 October 2026
+
+- TypeScript and production build passed.
+- Inspected production HTML: one H1, expected search description, production canonical, index/follow policy, and valid JSON-LD with Organization, WebSite and Service nodes.
+- Confirmed production robots.txt excludes API routes and references the canonical sitemap.
+- Parsed sitemap XML: contains only the canonical homepage.
+- Confirmed generated 404 HTML contains noindex and does not inherit the homepage canonical.
+- Live deployment, Search Console verification and indexing remain pending.
