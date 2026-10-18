@@ -1,5 +1,5 @@
 export const site = {
-  url: 'https://geeschils.com',
+  url: 'https://www.geeschills.com',
   name: 'GEES CHILLS',
   title: 'Cooler Hire in Ghana for Events | GEES CHILLS',
   description: 'Hire coolers for weddings, birthdays, corporate events and family gatherings in Ghana. Find your GEES CHILLS package and enquire about your event.',

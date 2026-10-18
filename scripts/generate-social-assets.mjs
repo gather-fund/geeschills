@@ -30,7 +30,7 @@ const design=Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" h
 </g>
 <path d="M52 535H698" stroke="#355462"/>
 <text x="52" y="578" fill="white" font-size="20" font-weight="700">Every event. The right package.</text>
-<text x="52" y="606" fill="#a6c9d7" font-size="14">geeschils.com</text>
+<text x="52" y="606" fill="#a6c9d7" font-size="14">geeschills.com</text>
 </g></svg>`);
 await sharp(design).composite([
   {input:photo,left:770,top:0},

@@ -35,7 +35,7 @@ The production build includes a server endpoint for email. Preview it with `npx 
 
 The enquiry form sends event details to a server endpoint using Resend. It requires a visitor email address and sets Reply-To to that address. The recipient defaults to gloriaamankrahyeboah97@gmail.com. The WhatsApp control remains available if email sending fails.
 
-**Account setup is still required.** Follow [EMAIL_SETUP.md](EMAIL_SETUP.md) to verify geeschils.com in Resend, add the private Vercel environment variables and test delivery.
+**Account setup is still required.** Follow [EMAIL_SETUP.md](EMAIL_SETUP.md) to verify geeschills.com in Resend, add the private Vercel environment variables and test delivery.
 
 The app now uses standard Next.js server hosting on Vercel. Static export has been removed because sending email requires a server endpoint. Previous `out/` files are historical and must not be deployed for this version.
 

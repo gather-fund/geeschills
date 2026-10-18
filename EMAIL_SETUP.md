@@ -1,19 +1,19 @@
 # Enable enquiry emails on Vercel
 
-The application is prepared for the domain supplied: **geeschils.com**.
+The application is prepared for the domain supplied: **geeschills.com**.
 Enquiries are delivered to **gloriaamankrahyeboah97@gmail.com**.
 
 ## 1. Verify the sender in Resend
 
 1. Create/sign into https://resend.com and open Domains.
-2. Add `geeschils.com` as a sending domain.
+2. Add `geeschills.com` as a sending domain.
 3. Copy the exact DNS records Resend displays into the provider that manages this domain's DNS. Use the names, values and record types shown in your dashboard; do not guess them. Existing website records should stay in place.
 4. Click Verify and wait until the sending domain is verified.
 5. Create a sending API key scoped to that domain.
 
 Reference: https://resend.com/docs/dashboard/domains/introduction
 
-`enquiries@geeschils.com` is the outgoing sender identity. Resend domain verification lets the app send from it; it does not create a mailbox. The business receives enquiries in Gmail, and Reply uses the visitor's email address.
+`enquiries@geeschills.com` is the outgoing sender identity. Resend domain verification lets the app send from it; it does not create a mailbox. The business receives enquiries in Gmail, and Reply uses the visitor's email address.
 
 ## 2. Configure the Vercel project
 
@@ -25,7 +25,7 @@ Under Project → Settings → Environment Variables, set:
 | Name | Value |
 | --- | --- |
 | `RESEND_API_KEY` | Your private Resend sending API key |
-| `ENQUIRY_FROM_EMAIL` | `GEES CHILLS <enquiries@geeschils.com>` |
+| `ENQUIRY_FROM_EMAIL` | `GEES CHILLS <enquiries@geeschills.com>` |
 | `ENQUIRY_TO_EMAIL` | `gloriaamankrahyeboah97@gmail.com` |
 
 Set them for Production. Add them to Preview/Development only if those environments should also send real emails. Never prefix the API key with `NEXT_PUBLIC_`, commit it, or put it in browser code.
@@ -34,7 +34,7 @@ Redeploy after saving the variables; they do not update an existing deployment.
 
 Reference: https://vercel.com/docs/environment-variables
 
-Add `geeschils.com` under Vercel project Domains and follow Vercel's displayed DNS instructions if the website domain is not connected yet.
+Add `geeschills.com` under Vercel project Domains and follow Vercel's displayed DNS instructions if the website domain is not connected yet.
 
 ## 3. Verify actual delivery
 

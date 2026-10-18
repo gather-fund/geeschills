@@ -1,6 +1,6 @@
 # Search setup
 
-Production domain: https://geeschils.com/
+Production domain: https://www.geeschills.com/
 
 Implemented:
 
@@ -14,9 +14,9 @@ Implemented:
 
 ## After deployment
 
-1. Make `geeschils.com` the production domain in Vercel. Redirect any alternate domain to it.
+1. Make `www.geeschills.com` the production domain in Vercel. Redirect any alternate domain to it.
 2. Add the domain in Google Search Console and follow its DNS verification instructions. Alternatively, create a URL-prefix property and copy the HTML-tag token into `GOOGLE_SITE_VERIFICATION` in Vercel, then redeploy before verifying.
-3. Submit `https://geeschils.com/sitemap.xml` in Search Console.
+3. Submit `https://www.geeschills.com/sitemap.xml` in Search Console.
 4. Use URL Inspection to check the homepage and request indexing. Use Google's Rich Results Test or Schema Markup Validator to inspect the deployed structured data.
 5. If setting up Google Business Profile, use the business's real address/service-area information. An address, opening hours and reviews have not been invented in the site's structured data.
 

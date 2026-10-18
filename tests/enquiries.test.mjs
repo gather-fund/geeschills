@@ -14,8 +14,8 @@ function load(path) {
 const { POST } = load(resolve('src/app/api/enquiries/route.ts'));
 const date = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 const valid = { name: 'Test visitor', email: 'visitor@example.com', date, guests: '80', location: 'Accra', package: 'Big celebration', notes: 'Outdoor event', website: '' };
-function request(data = valid, origin = 'https://geeschils.com') {
-  return new Request('https://geeschils.com/api/enquiries/', { method: 'POST', headers: { 'Content-Type': 'application/json', origin }, body: JSON.stringify(data) });
+function request(data = valid, origin = 'https://geeschills.com') {
+  return new Request('https://geeschills.com/api/enquiries/', { method: 'POST', headers: { 'Content-Type': 'application/json', origin }, body: JSON.stringify(data) });
 }
 test('enquiry validation and mocked email delivery', async () => {
   const originalFetch = globalThis.fetch;
@@ -27,13 +27,13 @@ test('enquiry validation and mocked email delivery', async () => {
     delete process.env.ENQUIRY_FROM_EMAIL;
     assert.equal((await POST(request())).status, 503);
     process.env.RESEND_API_KEY = 'fake-test-key';
-    process.env.ENQUIRY_FROM_EMAIL = 'GEES CHILLS <enquiries@geeschils.com>';
+    process.env.ENQUIRY_FROM_EMAIL = 'GEES CHILLS <enquiries@geeschills.com>';
     delete process.env.ENQUIRY_TO_EMAIL;
     assert.equal((await POST(request(valid, 'https://unrelated.example'))).status, 403);
     for (const changes of [{email:'bad'}, {email:'bad\r\n@example.com'}, {guests:'0'}, {guests:'1.5'}, {package:'Unknown'}, {date:'2020-01-01'}, {date:'2099-02-30'}, {name:'  '}, {notes:'x'.repeat(1001)}, {website:'bot'}]) {
       assert.equal((await POST(request({...valid,...changes}))).status, 400, JSON.stringify(changes));
     }
-    assert.equal((await POST(new Request('https://geeschils.com/api/enquiries/', { method:'POST',headers:{'Content-Type':'application/json'},body:'{' }))).status, 400);
+    assert.equal((await POST(new Request('https://geeschills.com/api/enquiries/', { method:'POST',headers:{'Content-Type':'application/json'},body:'{' }))).status, 400);
     assert.equal((await POST(request({...valid, notes:'x'.repeat(12001)}))).status, 413);
     assert.equal(sends, 0);
     globalThis.fetch = async (url, init) => {
