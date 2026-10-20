@@ -45,7 +45,7 @@ The logo and two drink photographs were supplied by the user. The homepage uses 
 
 See `QA.md` for checks performed on the Next.js version.
 
-The website promo player uses `public/assets/promo-v8.mp4` (24 seconds, 1080 × 1920, H.264/AAC) and its matching `promo-v8-poster.jpg`, copied from `promo-v8/`. Versioned URLs prevent the previous video being reused from browser caches.
+The website promo player uses `public/assets/promo-v8.mp4` (24 seconds, 1080 × 1920, H.264/AAC) and a poster frame `promo-v8-poster-2.jpg` taken from the video’s opening shot (2.5s). Versioned URLs prevent the previous video being reused from browser caches.
 
 ## WhatsApp contact
 
