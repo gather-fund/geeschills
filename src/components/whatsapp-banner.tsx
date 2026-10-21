@@ -1,4 +1,5 @@
 'use client';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function WhatsAppBanner() {
@@ -7,6 +8,7 @@ export default function WhatsAppBanner() {
   const message = encodeURIComponent('Hi GEES CHILLS! I’d like to enquire about a cooler hire package for my event.');
   // The enquiry section has its own WhatsApp link, so step aside instead of covering the form.
   const [hidden, setHidden] = useState(false);
+  const adminPage = usePathname()?.startsWith('/admin');
   useEffect(() => {
     const enquiry = document.getElementById('enquire');
     if (!enquiry) return;
@@ -19,6 +21,7 @@ export default function WhatsAppBanner() {
     <span>{configured ? 'Chat with us' : 'WhatsApp · number coming soon'}</span>
   </>;
 
+  if (adminPage) return null;
   return <aside className={`whatsapp-banner${hidden ? ' is-hidden' : ''}`} aria-label="WhatsApp contact">
       {configured ? <a className="whatsapp-contact" href={`https://wa.me/${number}?text=${message}`} target="_blank" rel="noopener noreferrer" aria-label="Chat with GEES CHILLS on WhatsApp (opens in a new tab)" tabIndex={hidden ? -1 : undefined}>{content}</a> : <span className="whatsapp-contact whatsapp-unconfigured" aria-disabled="true">{content}</span>}
   </aside>;
