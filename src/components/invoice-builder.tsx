@@ -19,7 +19,7 @@ async function api(path: string, init?: RequestInit) {
   const response = await fetch(path, { ...init, headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000) });
   const result = await response.json().catch(() => ({}));
   if (response.status === 401) throw new SignedOut();
-  if (!response.ok) throw new Error(result.error || 'Something went wrong. Please try again.');
+  if (!response.ok) throw new Error(result.error || `The server answered with an error (HTTP ${response.status}). Please try again.`);
   return result;
 }
 

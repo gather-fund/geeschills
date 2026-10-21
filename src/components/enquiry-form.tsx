@@ -98,7 +98,8 @@ export default function EnquiryForm() {
         body: JSON.stringify(Object.fromEntries(data.entries())),
         signal: AbortSignal.timeout(20000),
       });
-      const result = await response.json();
+      // A proxy error page is not JSON; fall back to the generic message below.
+      const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.success) throw new Error(result.error || 'Unable to send your enquiry. Please try again.');
       setSent(true);
       setStatus('Your enquiry has been submitted. We’ll reply to the email address you provided. Your booking is confirmed only after we agree the details.');

@@ -61,10 +61,10 @@ test('enquiry validation and mocked email delivery', async () => {
     assert.deepEqual(await (await POST(request({...valid,to:'attacker@example.com'}))).json(), {success:true});
     globalThis.fetch = async () => Response.json({message:'Private provider detail'}, {status:403});
     const failure = await POST(request());
-    assert.equal(failure.status, 502);
+    assert.equal(failure.status, 503, 'not 502, which Cloudflare replaces with its own page');
     assert.doesNotMatch(JSON.stringify(await failure.json()), /Private provider detail/);
     globalThis.fetch = async () => { throw new Error('Network error'); };
-    assert.equal((await POST(request())).status, 502);
+    assert.equal((await POST(request())).status, 503);
 
     // Rate limit: the 11th request from one IP within the hour is refused before any other work.
     globalThis.fetch = async () => { sends++; throw new Error('Unexpected send'); };
@@ -73,7 +73,7 @@ test('enquiry validation and mocked email delivery', async () => {
     const limited = await POST(request(valid, undefined, '198.51.100.7'));
     assert.equal(limited.status, 429);
     assert.ok(Number(limited.headers.get('retry-after')) > 0);
-    assert.equal((await POST(request(valid, undefined, '198.51.100.8'))).status, 502, 'other IPs are unaffected');
+    assert.equal((await POST(request(valid, undefined, '198.51.100.8'))).status, 503, 'other IPs are unaffected');
     assert.equal(sends, 1);
 
     // Turnstile: once configured, a missing, rejected or unverifiable token never reaches the email provider.

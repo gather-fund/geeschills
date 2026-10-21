@@ -69,9 +69,9 @@ export async function POST(request: Request) {
       }),
       signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) return fail('We couldn’t send your enquiry. Please try again or contact us on WhatsApp.', 502);
+    if (!response.ok) return fail('We couldn’t send your enquiry. Please try again or contact us on WhatsApp.', 503);
     const result = await response.json();
-    if (!result.id) return fail('We couldn’t confirm your enquiry. Please contact us on WhatsApp.', 502);
+    if (!result.id) return fail('We couldn’t confirm your enquiry. Please contact us on WhatsApp.', 503);
     return Response.json({ success: true });
-  } catch { return fail('We couldn’t send your enquiry. Please try again or contact us on WhatsApp.', 502); }
+  } catch { return fail('We couldn’t send your enquiry. Please try again or contact us on WhatsApp.', 503); }
 }

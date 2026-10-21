@@ -137,7 +137,9 @@ test('invoice register in the Google Sheet', () => withEnv({ ADMIN_PASSWORD: pas
   reply = { ok: false, error: 'not confirmed' };
   assert.equal((await post({ action: 'paid', number: 'GC-2026-0002' })).status, 409);
   reply = { ok: true, number: 'INV-1', status: 'Quote' };
-  assert.equal((await post({ action: 'save', invoice })).status, 502, 'unexpected numbers from the sheet are refused');
+  const old = await post({ action: 'save', invoice });
+  assert.equal(old.status, 424, 'unexpected numbers from the sheet are refused');
+  assert.match((await old.json()).error, /older version of the script/);
 
   // Listing and reopening.
   reply = { ok: true, invoices: [{ number: 'GC-2026-0001', status: 'Paid', client: 'Patricia', total: '10,660' }, { number: 'junk', status: 'Quote' }] };
@@ -152,14 +154,24 @@ test('invoice register in the Google Sheet', () => withEnv({ ADMIN_PASSWORD: pas
   assert.equal(opened.invoice.items.length, 3);
   // A hand-edited sheet row that no longer passes validation is reported, not loaded.
   reply = { ok: true, status: 'Quote', invoice: { ...invoice, items: 'broken' } };
-  assert.equal((await get('?number=GC-2026-0001')).status, 502);
+  assert.equal((await get('?number=GC-2026-0001')).status, 424);
   reply = { ok: false, error: 'unknown invoice' };
   assert.equal((await get('?number=GC-2026-0999')).status, 404);
 
   reply = { ok: false, error: 'unauthorized' };
   const rejected = await post({ action: 'save', invoice });
-  assert.equal(rejected.status, 502);
+  assert.equal(rejected.status, 424);
   assert.match((await rejected.json()).error, /SHEETS_WEBHOOK_SECRET/);
+  // Each way the Apps Script deployment can be misconfigured gets its own explanation.
+  const message = async () => { const response = await post({ action: 'save', invoice }); assert.equal(response.status, 424); return (await response.json()).error; };
+  globalThis.fetch = async () => new Response('<!DOCTYPE html><title>Sign in</title>', { status: 200, headers: { 'Content-Type': 'text/html' } });
+  assert.match(await message(), /“Anyone” \(not “Anyone with Google account”\)/);
+  globalThis.fetch = async () => new Response('<html>Not found</html>', { status: 404 });
+  assert.match(await message(), /HTTP 404/);
+  globalThis.fetch = async () => Response.json({ ok: false, error: 'unknown action' });
+  assert.match(await message(), /older version of the script/);
+  globalThis.fetch = async () => Response.json({ ok: false, error: 'invalid request' });
+  assert.match(await message(), /Executions/);
   globalThis.fetch = async () => { throw new Error('offline'); };
-  assert.equal((await post({ action: 'save', invoice })).status, 502);
+  assert.match(await message(), /Could not reach/);
 }));

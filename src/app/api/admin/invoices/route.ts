@@ -1,6 +1,6 @@
 import { hasSession, sameOrigin } from '../../../../lib/admin-auth';
 import { addDays, invoiceNumberPattern, invoiceTotals, lineAmount, money, parseOrder } from '../../../../lib/invoice';
-import { sheetRequest } from '../../../../lib/sheets';
+import { outdatedScript, sheetRequest } from '../../../../lib/sheets';
 
 export const runtime = 'nodejs';
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     if (!result.ok) return fail(result.error, result.status);
     // The sheet can be edited by hand, so its copy goes through the same checks as a new invoice.
     const parsed = parseOrder(result.data.invoice);
-    if ('error' in parsed) return fail(`The saved copy of ${number} could not be read (${parsed.error})`, 502);
+    if ('error' in parsed) return fail(`The saved copy of ${number} could not be read (${parsed.error})`, 424);
     const status = statuses.includes(String(result.data.status)) ? String(result.data.status) : 'Quote';
     return Response.json({ invoice: { ...parsed.invoice, number }, status });
   }
@@ -62,6 +62,7 @@ export async function POST(request: Request) {
   const result = await sheetRequest({ action: body.action, order });
   if (!result.ok) return fail(result.error, result.status);
   const number = text(result.data.number);
-  if (!invoiceNumberPattern.test(number)) return fail('The Google Sheet returned an unexpected invoice number. Check the script is up to date.', 502);
+  // The first version of the script saved orders but did not issue numbers.
+  if (!invoiceNumberPattern.test(number)) return fail(outdatedScript, 424);
   return Response.json({ success: true, number, status: statuses.includes(text(result.data.status)) ? text(result.data.status) : 'Quote', row: result.data.row });
 }
