@@ -165,7 +165,9 @@ test('invoice register in the Google Sheet', () => withEnv({ ADMIN_PASSWORD: pas
   // Each way the Apps Script deployment can be misconfigured gets its own explanation.
   const message = async () => { const response = await post({ action: 'save', invoice }); assert.equal(response.status, 424); return (await response.json()).error; };
   globalThis.fetch = async () => new Response('<!DOCTYPE html><title>Sign in</title>', { status: 200, headers: { 'Content-Type': 'text/html' } });
-  assert.match(await message(), /“Anyone” \(not “Anyone with Google account”\)/);
+  assert.match(await message(), /sign-in page.*“Anyone” \(not “Anyone with Google account”/);
+  globalThis.fetch = async () => new Response('<html>Unauthorized</html>', { status: 401 });
+  assert.match(await message(), /HTTP 401\). .*“Anyone”/);
   globalThis.fetch = async () => new Response('<html>Not found</html>', { status: 404 });
   assert.match(await message(), /HTTP 404/);
   globalThis.fetch = async () => Response.json({ ok: false, error: 'unknown action' });

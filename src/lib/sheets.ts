@@ -25,9 +25,11 @@ export async function sheetRequest(payload: Record<string, unknown>): Promise<Sh
   if (response.ok && result?.ok === true) return { ok: true, data: result };
   console.error('Google Sheet request failed:', payload.action, response.status, result?.error ?? body.slice(0, 200));
   if (!result) {
-    // A web page instead of JSON is Google's sign-in or error page: the deployment is not public.
+    // 401/403 or a sign-in page: the deployment is not open to callers without a Google sign-in.
+    const access = 'In Apps Script open Deploy → Manage deployments → Edit (pencil), set “Who has access” to “Anyone” (not “Anyone with Google account” or “Only myself”), and click Deploy.';
+    if (response.status === 401 || response.status === 403) return failed(`Google refused access to the script (HTTP ${response.status}). ${access}`);
     if (!response.ok) return failed(`Google answered with an error (HTTP ${response.status}). Check SHEETS_WEBHOOK_URL is the current web app URL and the deployment still exists.`);
-    return failed('Google returned a sign-in page instead of the script’s reply. In Apps Script open Deploy → Manage deployments, and set “Who has access” to “Anyone” (not “Anyone with Google account”).');
+    return failed(`Google returned a sign-in page instead of the script’s reply. ${access}`);
   }
   if (result.error === 'unauthorized') return failed('The Google Sheet rejected the connection secret. Make sure the script property WEBHOOK_SECRET exactly matches SHEETS_WEBHOOK_SECRET on Vercel.');
   if (result.error === 'unknown invoice') return { ok: false, status: 404, error: 'That invoice number is not in the register.' };

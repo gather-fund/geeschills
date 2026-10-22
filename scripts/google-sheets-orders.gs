@@ -90,8 +90,9 @@ function list() {
   const sheet = tab(INVOICES, INVOICE_HEADERS, INVOICE_TEXT_COLUMNS);
   const last = sheet.getLastRow();
   if (last < 2) return { ok: true, invoices: [] };
-  const rows = sheet.getRange(2, 1, last - 1, INVOICE_HEADERS.length).getDisplayValues();
-  const pick = (r, name) => r[col(INVOICE_HEADERS, name)];
+  const rows = sheet.getRange(2, 1, last - 1, INVOICE_HEADERS.length).getValues();
+  // Dates go out as ISO text and numbers as plain digits, whatever the sheet's display format.
+  const pick = (r, name) => { const value = r[col(INVOICE_HEADERS, name)]; return value instanceof Date ? value.toISOString() : String(value); };
   const invoices = rows.reverse().slice(0, 300).map(r => ({
     number: pick(r, 'Invoice no.'), status: pick(r, 'Status'), invoiceDate: pick(r, 'Invoice date'), client: pick(r, 'Client'),
     eventDate: pick(r, 'Event date'), total: pick(r, 'Total (GH₵)'), updatedAt: pick(r, 'Updated at'),

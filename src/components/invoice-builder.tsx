@@ -4,19 +4,33 @@ import { eventTypes } from '../lib/enquiry-options';
 import { missingBusinessDetails } from '../lib/business';
 import { blankInvoice, displayDate, invoiceNumberPattern, invoiceTotals, money, type Invoice, type InvoiceItem } from '../lib/invoice';
 import InvoiceDocument from './invoice-document';
+import InvoiceRegister, { type InvoiceStatus, type Listed } from './invoice-register';
 
-type InvoiceStatus = 'Quote' | 'Confirmed' | 'Paid';
 type Draft = Invoice & { status?: InvoiceStatus };
 type Notice = { tone: 'ok' | 'error' | 'info'; text: string };
-type Listed = { number: string; status: InvoiceStatus; invoiceDate: string; client: string; eventDate: string; total: string; updatedAt: string };
-type Busy = '' | 'save' | 'print' | 'confirm' | 'paid' | 'list' | 'open';
+type Busy = '' | 'save' | 'print' | 'confirm' | 'paid';
+type Pending = { kind: 'new' } | { kind: 'open'; number: string };
 const draftKey = 'gees-chills-invoice-draft';
+// The draft as last saved or opened, to tell whether there are unsaved changes.
+const baselineKey = 'gees-chills-invoice-baseline';
+const snapshot = (draft: Draft) => JSON.stringify({ ...draft, status: undefined });
 
 class SignedOut extends Error {}
+const describe = (error: unknown) => error instanceof SignedOut ? 'Your sign-in has expired. Reload the page to sign in again; this invoice is kept.'
+  : error instanceof Error && error.name !== 'TimeoutError' ? error.message : 'The Google Sheet took too long to answer. Check Saved invoices before trying again.';
+const networkError = (error: unknown) => error instanceof Error && error.name === 'TimeoutError' ? error
+  : new Error('The connection dropped before the server answered. Check your internet connection and try again; if you were saving, open Saved invoices first to see whether it went through.');
 
 // Every request to the register goes through here, so an expired sign-in is reported the same way.
 async function api(path: string, init?: RequestInit) {
-  const response = await fetch(path, { ...init, headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000) });
+  const request = () => fetch(path, { ...init, headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000) });
+  let response: Response;
+  try { response = await request(); } catch (error) {
+    // Reading the register is safe to repeat, so retry once if a flaky connection drops; saves are not
+    // retried automatically, because the first attempt may already have reached the sheet.
+    if (init?.method && init.method !== 'GET') throw networkError(error);
+    try { response = await request(); } catch (retryError) { throw networkError(retryError); }
+  }
   const result = await response.json().catch(() => ({}));
   if (response.status === 401) throw new SignedOut();
   if (!response.ok) throw new Error(result.error || `The server answered with an error (HTTP ${response.status}). Please try again.`);
@@ -26,26 +40,41 @@ async function api(path: string, init?: RequestInit) {
 export default function InvoiceBuilder() {
   // Starts empty and loads after mount: drafts and today's date only exist in the browser.
   const [invoice, setInvoice] = useState<Draft | null>(null);
+  const [baseline, setBaseline] = useState('');
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState<Busy>('');
-  const [pending, setPending] = useState<{ kind: 'new' } | { kind: 'open'; number: string } | null>(null);
+  const [pending, setPending] = useState<Pending | null>(null);
+  const [view, setView] = useState<'edit' | 'list'>('edit');
   const [register, setRegister] = useState<Listed[] | null>(null);
-  const [showRegister, setShowRegister] = useState(false);
-  const [search, setSearch] = useState('');
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerError, setRegisterError] = useState('');
+  const [loadedAt, setLoadedAt] = useState<number | null>(null);
+  const [opening, setOpening] = useState('');
   useEffect(() => {
-    let saved: Draft | null = null;
-    try { saved = JSON.parse(localStorage.getItem(draftKey) ?? 'null'); } catch {}
-    // Drafts from before the register used locally invented numbers; those are dropped.
-    if (saved && Array.isArray(saved.items)) setInvoice(invoiceNumberPattern.test(saved.number) ? saved : { ...saved, number: '', status: undefined });
-    else setInvoice(blankInvoice());
+    let saved: Draft | null = null, savedBaseline: string | null = null;
+    try { saved = JSON.parse(localStorage.getItem(draftKey) ?? 'null'); savedBaseline = localStorage.getItem(baselineKey); } catch {}
+    if (saved && Array.isArray(saved.items)) {
+      // Drafts from before the register used locally invented numbers; those are dropped.
+      setInvoice(invoiceNumberPattern.test(saved.number) ? saved : { ...saved, number: '', status: undefined });
+      setBaseline(savedBaseline ?? '');
+    } else {
+      const blank = blankInvoice();
+      setInvoice(blank); setBaseline(snapshot(blank));
+    }
   }, []);
-  useEffect(() => { if (invoice) try { localStorage.setItem(draftKey, JSON.stringify(invoice)); } catch {} }, [invoice]);
+  useEffect(() => { if (invoice) try { localStorage.setItem(draftKey, JSON.stringify(invoice)); localStorage.setItem(baselineKey, baseline); } catch {} }, [invoice, baseline]);
   if (!invoice) return <p className="admin-loading">Loading invoice…</p>;
   const draft = invoice;
 
   const missing = missingBusinessDetails();
   const totals = invoiceTotals(invoice);
   const status = invoice.number ? invoice.status ?? 'Quote' : undefined;
+  const dirty = snapshot(invoice) !== baseline;
+  // Keeps the cached register in step with saves, so the list is current without reloading it.
+  const remember = (saved: Draft) => setRegister(current => current && [
+    { number: saved.number, status: saved.status ?? 'Quote', invoiceDate: saved.date, client: saved.clientName, eventDate: saved.eventDate, total: String(invoiceTotals(saved).total), updatedAt: new Date().toISOString() },
+    ...current.filter(row => row.number !== saved.number),
+  ]);
   const update = (changes: Partial<Draft>) => { setInvoice({ ...invoice, ...changes }); setNotice(null); };
   const field = (name: keyof Invoice) => ({
     name, value: invoice[name] as string,
@@ -56,18 +85,14 @@ export default function InvoiceBuilder() {
   async function run(kind: Busy, waiting: string, task: () => Promise<void>) {
     if (busy) return;
     setBusy(kind); setNotice({ tone: 'info', text: waiting });
-    try { await task(); } catch (error) {
-      const text = error instanceof SignedOut ? 'Your sign-in has expired. Reload the page to sign in again; this invoice is kept.'
-        : error instanceof Error && error.name !== 'TimeoutError' ? error.message : 'The Google Sheet took too long to answer. Check the register before trying again.';
-      setNotice({ tone: 'error', text });
-    } finally { setBusy(''); }
+    try { await task(); } catch (error) { setNotice({ tone: 'error', text: describe(error) }); } finally { setBusy(''); }
   }
 
   // Saving records the invoice in the register; the first save issues its number.
   async function saveToRegister(action: 'save' | 'confirm') {
     const result = await api('/api/admin/invoices/', { method: 'POST', body: JSON.stringify({ action, invoice: draft }) });
     const saved = { ...draft, number: result.number, status: result.status };
-    setInvoice(saved);
+    setInvoice(saved); setBaseline(snapshot(saved)); remember(saved);
     return saved;
   }
 
@@ -96,52 +121,80 @@ export default function InvoiceBuilder() {
   });
   const markPaid = () => run('paid', 'Marking as paid…', async () => {
     await api('/api/admin/invoices/', { method: 'POST', body: JSON.stringify({ action: 'paid', number: draft.number }) });
-    setInvoice({ ...draft, status: 'Paid' });
+    const paid = { ...draft, status: 'Paid' as const };
+    setInvoice(paid); remember(paid);
     setNotice({ tone: 'ok', text: `${draft.number} is marked as paid.` });
   });
-  const loadRegister = () => run('list', 'Loading saved invoices…', async () => {
-    const result = await api('/api/admin/invoices/');
-    setRegister(result.invoices); setShowRegister(true); setNotice(null);
-  });
-  const open = (number: string) => run('open', `Opening ${number}…`, async () => {
-    const result = await api(`/api/admin/invoices/?number=${encodeURIComponent(number)}`);
-    setInvoice({ ...result.invoice, status: result.status }); setPending(null); setShowRegister(false);
-    setNotice({ tone: 'ok', text: `Opened ${number}. Save after editing to update the register.` });
-  });
+  async function loadRegister() {
+    setRegisterLoading(true); setRegisterError('');
+    try { const result = await api('/api/admin/invoices/'); setRegister(result.invoices); setLoadedAt(Date.now()); }
+    catch (error) { setRegisterError(describe(error)); }
+    finally { setRegisterLoading(false); }
+  }
+  function showRegister() {
+    setView('list');
+    // Reload when first opened or after a couple of minutes; saves on this device update it anyway.
+    if (!registerLoading && (!loadedAt || Date.now() - loadedAt > 120000)) loadRegister();
+  }
+  function startNew() {
+    const blank = blankInvoice();
+    setInvoice(blank); setBaseline(snapshot(blank)); setPending(null); setNotice(null); setView('edit');
+  }
+  async function openInvoice(number: string) {
+    setPending(null); setOpening(number); setRegisterError(''); setView('list');
+    try {
+      const result = await api(`/api/admin/invoices/?number=${encodeURIComponent(number)}`);
+      const opened = { ...result.invoice, status: result.status };
+      setInvoice(opened); setBaseline(snapshot(opened)); setView('edit');
+      setNotice({ tone: 'ok', text: `Opened ${number}. Save after editing to update the register.` });
+    } catch (error) { setRegisterError(describe(error)); }
+    finally { setOpening(''); }
+  }
+  // Only ask before discarding when there is something to lose.
+  const requestNew = () => dirty ? setPending({ kind: 'new' }) : startNew();
+  const requestOpen = (number: string) => {
+    if (number === invoice.number && !dirty) setView('edit');
+    else if (dirty) setPending({ kind: 'open', number });
+    else openInvoice(number);
+  };
 
   async function signOut() {
     // Clear the draft too, so client details do not stay on a shared or borrowed device.
-    try { localStorage.removeItem(draftKey); } catch {}
+    try { localStorage.removeItem(draftKey); localStorage.removeItem(baselineKey); } catch {}
     await fetch('/api/admin/login/', { method: 'DELETE' }).catch(() => {});
     location.assign('/admin/login/');
   }
 
-  const query = search.trim().toLowerCase();
-  const shown = (register ?? []).filter(row => !query || `${row.number} ${row.client}`.toLowerCase().includes(query));
-
-  return <div className="admin-layout">
-    <section className="admin-panel no-print" aria-label="Invoice details">
-      <div className="admin-title"><div><p className="eyebrow">GEES CHILLS ADMIN</p><h1>Invoice</h1></div><button type="button" className="admin-secondary admin-signout" onClick={signOut}>Sign out</button></div>
+  const current = invoice.number || 'this draft';
+  return <>
+    <div className="admin-bar no-print">
+      <span className="admin-bar-brand"><img src="/assets/logo-mark.jpeg" alt="" width="345" height="411" />GEES CHILLS ADMIN</span>
+      <nav className="admin-tabs" aria-label="Admin sections">
+        <button type="button" aria-current={view === 'edit' ? 'page' : undefined} onClick={() => setView('edit')}>Invoice{dirty && <span className="admin-dot" title="Unsaved changes" aria-label="(unsaved changes)" />}</button>
+        <button type="button" aria-current={view === 'list' ? 'page' : undefined} onClick={showRegister}>Saved invoices{register && <span className="admin-count">{register.length}</span>}</button>
+      </nav>
+      <div className="admin-bar-actions">
+        <button type="button" className="admin-secondary" onClick={requestNew}>New invoice</button>
+        <button type="button" className="admin-secondary" onClick={signOut}>Sign out</button>
+      </div>
+    </div>
+    {pending && <div className="admin-pending no-print" role="alertdialog" aria-labelledby="pending-text">
+      <p id="pending-text"><strong>{current === 'this draft' ? 'This draft has unsaved changes.' : `${current} has unsaved changes.`}</strong> {pending.kind === 'new' ? 'Start a new invoice and discard them?' : `Open ${pending.number} and discard them?`}</p>
+      <div>
+        <button type="button" className="admin-secondary" onClick={() => setPending(null)} autoFocus>Keep editing</button>
+        <button type="button" className="admin-danger" onClick={() => pending.kind === 'new' ? startNew() : openInvoice(pending.number)}>Discard changes</button>
+      </div>
+    </div>}
+    {view === 'list' ? <InvoiceRegister rows={register} loading={registerLoading} error={registerError} loadedAt={loadedAt} openNumber={invoice.number} opening={opening} onRefresh={loadRegister} onOpen={requestOpen} onNew={requestNew} /> :
+  <div className="admin-layout">
+    <section className="admin-panel no-print" aria-labelledby="invoice-heading">
+      <div className="admin-heading">
+        <h1 id="invoice-heading">{invoice.number || 'New invoice'}</h1>
+        <p>{status && <span className={`admin-chip ${status.toLowerCase()}`}>{status}</span>}{dirty && <span className="admin-chip unsaved">Unsaved changes</span>}{!invoice.number && <span className="field-note">The next number is issued when you save.</span>}</p>
+      </div>
       {missing.length > 0 && <p className="admin-warning" role="note">Add your {missing.join(', ')} in <code>src/lib/business.ts</code> before sending invoices.</p>}
 
-      <div className="admin-register">
-        {showRegister && register
-          ? <>
-            <div className="admin-register-head"><strong>Saved invoices</strong><button type="button" className="admin-secondary admin-signout" onClick={() => setShowRegister(false)}>Close</button></div>
-            <label>Search<input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Invoice no. or client" /></label>
-            {shown.length ? <ul className="admin-register-list">{shown.map(row => <li key={row.number}>
-              <button type="button" onClick={() => setPending({ kind: 'open', number: row.number })} disabled={row.number === invoice.number}>
-                <span><strong>{row.number}</strong> {row.client}</span>
-                <span>{row.eventDate && `Event ${displayDate(row.eventDate)} · `}GH₵ {row.total}</span>
-                <span className={`admin-chip ${row.status.toLowerCase()}`}>{row.status}</span>
-              </button>
-            </li>)}</ul> : <p className="field-note">{register.length ? 'No invoices match.' : 'No saved invoices yet.'}</p>}
-          </>
-          : <button type="button" className="admin-secondary" onClick={loadRegister} disabled={Boolean(busy)}>{busy === 'list' ? 'Loading…' : 'Saved invoices'}</button>}
-      </div>
-
       <fieldset><legend>Invoice</legend>
-        <p className="admin-number">{invoice.number ? <><strong>{invoice.number}</strong> <span className={`admin-chip ${status!.toLowerCase()}`}>{status}</span></> : <>Not saved yet. The next number is issued when you save.</>}</p>
         <div className="form-row"><label>Date<input type="date" {...field('date')} /></label><label>Valid for (days)<input type="number" min={0} max={365} {...field('validDays')} /></label></div>
         <label>Deposit %<input type="number" min={0} max={100} {...field('depositPercent')} /></label>
       </fieldset>
@@ -180,15 +233,9 @@ export default function InvoiceBuilder() {
         {status !== 'Paid' && <button type="button" className="admin-confirm" onClick={confirm} disabled={Boolean(busy)}>{busy === 'confirm' ? 'Confirming…' : status === 'Confirmed' ? 'Save confirmed order' : 'Mark as confirmed'}</button>}
         {status === 'Confirmed' && <button type="button" className="admin-secondary" onClick={markPaid} disabled={Boolean(busy)}>{busy === 'paid' ? 'Saving…' : 'Mark as paid'}</button>}
         <p id="admin-status" role="status" aria-live="polite" className={notice ? `admin-status ${notice.tone}` : 'admin-status'}>{notice?.text}</p>
-        {pending
-          ? <div className="admin-discard">
-            <span>{pending.kind === 'new' ? 'Start a new invoice?' : `Open ${pending.number}?`} Unsaved changes to this one will be lost.</span>
-            <button type="button" className="admin-secondary" onClick={() => pending.kind === 'new' ? (setInvoice(blankInvoice()), setPending(null), setNotice(null)) : open(pending.number)}>{pending.kind === 'new' ? 'Start new' : 'Open'}</button>
-            <button type="button" className="admin-secondary" onClick={() => setPending(null)}>Cancel</button>
-          </div>
-          : <button type="button" className="admin-secondary" onClick={() => setPending({ kind: 'new' })}>New invoice</button>}
       </div>
     </section>
     <div className="admin-preview"><InvoiceDocument invoice={invoice} /></div>
-  </div>;
+  </div>}
+  </>;
 }
