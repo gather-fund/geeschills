@@ -34,6 +34,7 @@ function doPost(e) {
       case 'paid': return reply(markPaid(String(body.number)));
       case 'list': return reply(list());
       case 'get': return reply(getOne(String(body.number)));
+      case 'delete': return reply(remove(String(body.number)));
       default: return reply({ ok: false, error: 'unknown action' });
     }
   } catch (error) {
@@ -84,6 +85,18 @@ function markPaid(number) {
   const orderRow = findRow(orders, number, col(ORDER_HEADERS, 'Invoice no.') + 1);
   if (orderRow > 0) orders.getRange(orderRow, col(ORDER_HEADERS, 'Status') + 1).setValue('Paid');
   return { ok: true, number: number, status: 'Paid', row: rowIndex };
+}
+
+// Removes the invoice and its confirmed order. Its number is not issued again.
+function remove(number) {
+  const sheet = tab(INVOICES, INVOICE_HEADERS, INVOICE_TEXT_COLUMNS);
+  const rowIndex = findRow(sheet, number);
+  if (rowIndex < 0) return { ok: false, error: 'unknown invoice' };
+  sheet.deleteRow(rowIndex);
+  const orders = book().getSheetByName(ORDERS);
+  const orderRow = orders ? findRow(orders, number, col(ORDER_HEADERS, 'Invoice no.') + 1) : -1;
+  if (orderRow > 0) orders.deleteRow(orderRow);
+  return { ok: true, number: number };
 }
 
 function list() {
@@ -138,11 +151,12 @@ function findRow(sheet, number, column) {
   return index < 0 ? -1 : index + 2;
 }
 
+function book() { return SpreadsheetApp.getActiveSpreadsheet(); }
+
 function tab(name, headers, textColumns) {
-  const book = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = book.getSheetByName(name);
+  let sheet = book().getSheetByName(name);
   if (!sheet) {
-    sheet = book.insertSheet(name);
+    sheet = book().insertSheet(name);
     textColumns.forEach(h => sheet.getRange(1, headers.indexOf(h) + 1, sheet.getMaxRows(), 1).setNumberFormat('@'));
     sheet.appendRow(headers);
     sheet.setFrozenRows(1);

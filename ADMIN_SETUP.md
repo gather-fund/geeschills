@@ -10,6 +10,8 @@ The private page **/admin/invoice/** creates GEES CHILLS invoices and sends conf
 4. The first save issues the next invoice number from the Google Sheet (`GC-2026-0001`, `GC-2026-0002`, …, restarting each year). Numbers are never reused, and saving again updates the same invoice.
 5. When the client confirms (for example once the deposit arrives), press **Mark as confirmed**; the order also appears in the "Confirmed orders" tab with its items. Once fully paid, press **Mark as paid**.
 6. **Saved invoices** lists the register, newest first. Search by number or client and open one to edit, reprint or update its status.
+7. **Validity & payment** sets the footer of each invoice. Leave the validity line empty for the standard wording (it follows the date, "Valid for" and deposit), or press **Edit this wording** to change it. Payment details are saved with each invoice, and new invoices start with the ones last used.
+8. To remove an invoice, open it and press **Delete invoice**, then confirm. It is removed from both tabs of the sheet. Its number is not issued again, so the sequence will have a gap.
 7. **New invoice** clears the form for the next client.
 
 The Google Sheet is the record of every invoice issued. Statuses are Quote → Confirmed → Paid. Printing needs the sheet connection, so every printed invoice has a registered number.

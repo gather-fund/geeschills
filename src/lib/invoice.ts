@@ -1,3 +1,4 @@
+import { business } from './business';
 import { eventTypes } from './enquiry-options';
 
 // Shared by the invoice page and /api/admin/orders: the server recalculates every amount itself.
@@ -8,6 +9,8 @@ export type Invoice = {
   eventType: string; eventDate: string; venue: string; guests: string;
   items: InvoiceItem[];
   depositPercent: string; validDays: string; notes: string;
+  // Printed in the footer. An empty `terms` prints the standard validity line below.
+  terms: string; paymentDetails: string;
 };
 
 // Lines from a typical event quote. Pack sizes live in the description, so QTY always means
@@ -31,6 +34,13 @@ export function invoiceTotals(invoice: Pick<Invoice, 'items' | 'depositPercent'>
   return { subtotal, total: subtotal, depositPercent, deposit, balance: round(subtotal - deposit) };
 }
 
+// The standard validity line, kept in step with the dates and deposit.
+export function standardTerms(invoice: Pick<Invoice, 'date' | 'validDays' | 'depositPercent'>) {
+  const deposit = invoiceTotals({ items: [], depositPercent: invoice.depositPercent }).depositPercent;
+  const until = displayDate(addDays(invoice.date, Number(invoice.validDays) || 0));
+  return { valid: `Prices valid until ${until}.`, booking: deposit > 0 ? `Your booking is confirmed once the ${deposit}% deposit is received.` : 'Your booking is confirmed once payment is received.' };
+}
+
 export const money = (value: number) => value.toLocaleString('en-GH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 export const addDays = (isoDate: string, days: number) => {
@@ -50,6 +60,7 @@ export function blankInvoice(now = new Date()): Invoice {
     number: '', date: now.toISOString().slice(0, 10),
     clientName: '', clientPhone: '', clientEmail: '', eventType: '', eventDate: '', venue: '', guests: '',
     items: standardItems.map(item => ({ ...item })), depositPercent: '70', validDays: '14', notes: '',
+    terms: '', paymentDetails: business.paymentDetails,
   };
 }
 
@@ -66,6 +77,8 @@ export function parseOrder(input: unknown): { error: string } | { invoice: Invoi
     clientName: text('clientName'), clientPhone: text('clientPhone', 40), clientEmail: text('clientEmail', 254),
     eventType: text('eventType', 40), eventDate: text('eventDate', 10), venue: text('venue'), guests: text('guests', 7),
     items: [], depositPercent: text('depositPercent', 3), validDays: text('validDays', 3), notes: text('notes', 1000),
+    // Invoices saved before these were editable printed the standard payment details.
+    terms: text('terms', 500), paymentDetails: raw.paymentDetails === undefined ? business.paymentDetails : text('paymentDetails', 300),
   };
   if (invoice.number && !invoiceNumberPattern.test(invoice.number)) return { error: 'Please check the invoice number.' };
   if (!isoDate.test(invoice.date)) return { error: 'Please check the invoice date.' };

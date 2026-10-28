@@ -99,7 +99,9 @@ test('invoice register in the Google Sheet', () => withEnv({ ADMIN_PASSWORD: pas
   assert.equal((await post({ action: 'save', invoice }, { cookie: '' })).status, 401, 'route checks the session itself');
   assert.equal((await get('', '')).status, 401);
   assert.equal((await post({ action: 'save', invoice }, { origin: 'https://evil.example' })).status, 403, 'cross-site request');
-  assert.equal((await post({ action: 'delete', invoice })).status, 400, 'unknown action');
+  assert.equal((await post({ action: 'archive', invoice })).status, 400, 'unknown action');
+  assert.equal((await post({ action: 'delete', number: '../x' })).status, 400, 'deleting needs a valid number');
+  assert.equal((await post({ action: 'delete', number: 'GC-2026-0001' }, { origin: 'https://evil.example' })).status, 403, 'cross-site delete');
   assert.equal((await post({ action: 'save', invoice: { ...invoice, clientName: '' } })).status, 400);
   assert.equal((await post({ action: 'paid', number: '' })).status, 400, 'unsaved invoices cannot be paid');
   assert.equal((await get('?number=../x')).status, 400);
@@ -141,6 +143,12 @@ test('invoice register in the Google Sheet', () => withEnv({ ADMIN_PASSWORD: pas
   assert.equal(old.status, 424, 'unexpected numbers from the sheet are refused');
   assert.match((await old.json()).error, /older version of the script/);
 
+  reply = { ok: true, number: 'GC-2026-0001' };
+  assert.deepEqual(await (await post({ action: 'delete', number: 'GC-2026-0001' })).json(), { success: true, number: 'GC-2026-0001' });
+  assert.deepEqual({ action: payload.action, number: payload.number }, { action: 'delete', number: 'GC-2026-0001' });
+  reply = { ok: false, error: 'unknown invoice' };
+  assert.equal((await post({ action: 'delete', number: 'GC-2026-0999' })).status, 404);
+
   // Listing and reopening.
   reply = { ok: true, invoices: [{ number: 'GC-2026-0001', status: 'Paid', client: 'Patricia', total: '10,660' }, { number: 'junk', status: 'Quote' }] };
   const listed = await (await get()).json();
@@ -177,3 +185,19 @@ test('invoice register in the Google Sheet', () => withEnv({ ADMIN_PASSWORD: pas
   globalThis.fetch = async () => { throw new Error('offline'); };
   assert.match(await message(), /Could not reach/);
 }));
+
+test('validity line and payment details are saved per invoice', () => {
+  const { business } = load(resolve('src/lib/business.ts'));
+  const { standardTerms } = load(resolve('src/lib/invoice.ts'));
+  // Invoices saved before these fields existed keep printing the standard payment details.
+  assert.equal(parseOrder(invoice).invoice.paymentDetails, business.paymentDetails);
+  assert.equal(parseOrder(invoice).invoice.terms, '');
+  const edited = parseOrder({ ...invoice, terms: '  Prices valid for 7 days.\nNo refunds after the event.  ', paymentDetails: 'MTN MoMo 024 000 0000' }).invoice;
+  assert.equal(edited.terms, 'Prices valid for 7 days.\nNo refunds after the event.');
+  assert.equal(edited.paymentDetails, 'MTN MoMo 024 000 0000');
+  assert.equal(parseOrder({ ...invoice, paymentDetails: '' }).invoice.paymentDetails, '', 'payment line can be left off');
+  assert.equal(parseOrder({ ...invoice, terms: 'x'.repeat(900) }).invoice.terms.length, 500);
+  assert.deepEqual(standardTerms({ date: '2026-11-07', validDays: '14', depositPercent: '70' }),
+    { valid: 'Prices valid until 21/11/2026.', booking: 'Your booking is confirmed once the 70% deposit is received.' });
+  assert.equal(standardTerms({ date: '2026-11-07', validDays: '14', depositPercent: '0' }).booking, 'Your booking is confirmed once payment is received.');
+});

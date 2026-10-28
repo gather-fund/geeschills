@@ -2,14 +2,15 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { eventTypes } from '../lib/enquiry-options';
 import { missingBusinessDetails } from '../lib/business';
-import { blankInvoice, displayDate, invoiceNumberPattern, invoiceTotals, money, type Invoice, type InvoiceItem } from '../lib/invoice';
+import { business } from '../lib/business';
+import { blankInvoice, displayDate, invoiceNumberPattern, invoiceTotals, money, standardTerms, type Invoice, type InvoiceItem } from '../lib/invoice';
 import InvoiceDocument from './invoice-document';
 import InvoiceRegister, { type InvoiceStatus, type Listed } from './invoice-register';
 
 type Draft = Invoice & { status?: InvoiceStatus };
 type Notice = { tone: 'ok' | 'error' | 'info'; text: string };
-type Busy = '' | 'save' | 'print' | 'confirm' | 'paid';
-type Pending = { kind: 'new' } | { kind: 'open'; number: string };
+type Busy = '' | 'save' | 'print' | 'confirm' | 'paid' | 'delete';
+type Pending = { kind: 'new' } | { kind: 'open'; number: string } | { kind: 'delete' };
 const draftKey = 'gees-chills-invoice-draft';
 // The draft as last saved or opened, to tell whether there are unsaved changes.
 const baselineKey = 'gees-chills-invoice-baseline';
@@ -54,6 +55,8 @@ export default function InvoiceBuilder() {
     let saved: Draft | null = null, savedBaseline: string | null = null;
     try { saved = JSON.parse(localStorage.getItem(draftKey) ?? 'null'); savedBaseline = localStorage.getItem(baselineKey); } catch {}
     if (saved && Array.isArray(saved.items)) {
+      // Drafts from before the footer was editable.
+      saved = { ...saved, terms: saved.terms ?? '', paymentDetails: saved.paymentDetails ?? business.paymentDetails };
       // Drafts from before the register used locally invented numbers; those are dropped.
       setInvoice(invoiceNumberPattern.test(saved.number) ? saved : { ...saved, number: '', status: undefined });
       setBaseline(savedBaseline ?? '');
@@ -68,6 +71,7 @@ export default function InvoiceBuilder() {
 
   const missing = missingBusinessDetails();
   const totals = invoiceTotals(invoice);
+  const standard = standardTerms(invoice);
   const status = invoice.number ? invoice.status ?? 'Quote' : undefined;
   const dirty = snapshot(invoice) !== baseline;
   // Keeps the cached register in step with saves, so the list is current without reloading it.
@@ -125,6 +129,14 @@ export default function InvoiceBuilder() {
     setInvoice(paid); remember(paid);
     setNotice({ tone: 'ok', text: `${draft.number} is marked as paid.` });
   });
+  const deleteInvoice = () => run('delete', 'Deleting…', async () => {
+    const number = draft.number;
+    setPending(null);
+    await api('/api/admin/invoices/', { method: 'POST', body: JSON.stringify({ action: 'delete', number }) });
+    setRegister(current => current && current.filter(row => row.number !== number));
+    startNew();
+    setNotice({ tone: 'ok', text: `${number} was deleted from the register.` });
+  });
   async function loadRegister() {
     setRegisterLoading(true); setRegisterError('');
     try { const result = await api('/api/admin/invoices/'); setRegister(result.invoices); setLoadedAt(Date.now()); }
@@ -137,7 +149,8 @@ export default function InvoiceBuilder() {
     if (!registerLoading && (!loadedAt || Date.now() - loadedAt > 120000)) loadRegister();
   }
   function startNew() {
-    const blank = blankInvoice();
+    // Payment details rarely change, so a new invoice keeps the ones last used.
+    const blank = { ...blankInvoice(), paymentDetails: invoice!.paymentDetails };
     setInvoice(blank); setBaseline(snapshot(blank)); setPending(null); setNotice(null); setView('edit');
   }
   async function openInvoice(number: string) {
@@ -178,7 +191,7 @@ export default function InvoiceBuilder() {
         <button type="button" className="admin-secondary" onClick={signOut}>Sign out</button>
       </div>
     </div>
-    {pending && <div className="admin-pending no-print" role="alertdialog" aria-labelledby="pending-text">
+    {pending && pending.kind !== 'delete' && <div className="admin-pending no-print" role="alertdialog" aria-labelledby="pending-text">
       <p id="pending-text"><strong>{current === 'this draft' ? 'This draft has unsaved changes.' : `${current} has unsaved changes.`}</strong> {pending.kind === 'new' ? 'Start a new invoice and discard them?' : `Open ${pending.number} and discard them?`}</p>
       <div>
         <button type="button" className="admin-secondary" onClick={() => setPending(null)} autoFocus>Keep editing</button>
@@ -223,6 +236,13 @@ export default function InvoiceBuilder() {
         <button type="button" className="admin-secondary" onClick={() => update({ items: [...invoice.items, { qty: '', description: '', price: '' }] })}>Add line</button>
       </fieldset>
 
+      <fieldset><legend>Validity &amp; payment</legend>
+        <label>Validity line<textarea {...field('terms')} rows={2} maxLength={500} placeholder={`${standard.valid} ${standard.booking}`} /></label>
+        <p className="field-note">{invoice.terms.trim() ? <button type="button" className="admin-link" onClick={() => update({ terms: '' })}>Use the standard wording</button> : <>Empty uses the standard wording shown, which follows the date, “Valid for” and deposit. <button type="button" className="admin-link" onClick={() => update({ terms: `${standard.valid} ${standard.booking}` })}>Edit this wording</button></>}</p>
+        <label>Payment details<textarea {...field('paymentDetails')} rows={2} maxLength={300} placeholder="e.g. MTN MoMo 024 000 0000 (GEES CHILLS) · Bank: …, Acc. no. …" /></label>
+        <p className="field-note">Printed after “Payment:”. Leave empty to leave the payment line off. New invoices start with the details last used here.</p>
+      </fieldset>
+
       <label>Notes <span className="optional">(optional, printed)</span><textarea {...field('notes')} rows={3} maxLength={1000} /></label>
 
       <div className="admin-summary"><span>Total</span><strong>GH₵ {money(totals.total)}</strong>{totals.depositPercent > 0 && <span>Deposit {totals.depositPercent}%: GH₵ {money(totals.deposit)}</span>}</div>
@@ -232,6 +252,14 @@ export default function InvoiceBuilder() {
         <button type="button" className="admin-secondary" onClick={save} disabled={Boolean(busy)}>{busy === 'save' ? 'Saving…' : invoice.number ? 'Save changes' : 'Save as quote'}</button>
         {status !== 'Paid' && <button type="button" className="admin-confirm" onClick={confirm} disabled={Boolean(busy)}>{busy === 'confirm' ? 'Confirming…' : status === 'Confirmed' ? 'Save confirmed order' : 'Mark as confirmed'}</button>}
         {status === 'Confirmed' && <button type="button" className="admin-secondary" onClick={markPaid} disabled={Boolean(busy)}>{busy === 'paid' ? 'Saving…' : 'Mark as paid'}</button>}
+        {invoice.number && pending?.kind !== 'delete' && <button type="button" className="admin-delete" onClick={() => setPending({ kind: 'delete' })} disabled={Boolean(busy)}>{busy === 'delete' ? 'Deleting…' : 'Delete invoice'}</button>}
+        {pending?.kind === 'delete' && <div className="admin-pending admin-delete-confirm" role="alertdialog" aria-labelledby="delete-text">
+          <p id="delete-text"><strong>Delete {invoice.number}{invoice.clientName ? ` for ${invoice.clientName}` : ''}?</strong> It is removed from the Google Sheet{status !== 'Quote' ? ', including Confirmed orders' : ''}, and this can’t be undone. Its number won’t be reused.</p>
+          <div>
+            <button type="button" className="admin-secondary" onClick={() => setPending(null)} autoFocus>Keep invoice</button>
+            <button type="button" className="admin-danger" onClick={deleteInvoice} disabled={Boolean(busy)}>Delete invoice</button>
+          </div>
+    </div>}
         <p id="admin-status" role="status" aria-live="polite" className={notice ? `admin-status ${notice.tone}` : 'admin-status'}>{notice?.text}</p>
       </div>
     </section>

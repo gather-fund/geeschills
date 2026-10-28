@@ -1,12 +1,12 @@
 import { business } from '../lib/business';
-import { addDays, displayDate, invoiceTotals, lineAmount, money, type Invoice } from '../lib/invoice';
+import { displayDate, invoiceTotals, lineAmount, money, standardTerms, type Invoice } from '../lib/invoice';
 
 // The printable invoice, laid out like a standard Ghanaian event invoice with the client,
 // event, validity and payment details that quotes often leave out.
 export default function InvoiceDocument({ invoice }: { invoice: Invoice }) {
   const totals = invoiceTotals(invoice);
   const lines = invoice.items.filter(item => item.price.trim() !== '');
-  const validUntil = displayDate(addDays(invoice.date, Number(invoice.validDays) || 0));
+  const standard = standardTerms(invoice);
   return <article className="inv-doc" aria-label="Invoice preview">
     {/* Plain divs: the site styles every <header> and <footer> as page chrome. */}
     <div className="inv-head">
@@ -52,8 +52,10 @@ export default function InvoiceDocument({ invoice }: { invoice: Invoice }) {
     {invoice.notes && <section className="inv-notes"><h2>Notes</h2><p>{invoice.notes}</p></section>}
 
     <div className="inv-foot">
-      <p><strong className="inv-warn">Prices valid until {validUntil}.</strong> {totals.depositPercent > 0 ? `Your booking is confirmed once the ${totals.depositPercent}% deposit is received.` : 'Your booking is confirmed once payment is received.'}</p>
-      {business.paymentDetails && <p><strong>Payment:</strong> {business.paymentDetails}</p>}
+      {invoice.terms.trim()
+        ? <p className="inv-terms">{invoice.terms}</p>
+        : <p><strong className="inv-warn">{standard.valid}</strong> {standard.booking}</p>}
+      {invoice.paymentDetails?.trim() && <p className="inv-terms"><strong>Payment:</strong> {invoice.paymentDetails}</p>}
       <p><strong>Direct all enquiries to:</strong> {[...business.phones, business.email].join(' / ')}</p>
     </div>
   </article>;

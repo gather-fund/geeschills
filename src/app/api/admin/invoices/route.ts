@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   return Response.json({ invoices });
 }
 
-// POST saves an invoice (issuing its number the first time), confirms it, or marks it paid.
+// POST saves an invoice (issuing its number the first time), confirms it, marks it paid, or deletes it.
 export async function POST(request: Request) {
   if (!hasSession(request)) return fail('Your sign-in has expired. Please sign in again.', 401);
   // The session cookie is sent automatically, so refuse requests started by other sites.
@@ -46,6 +46,12 @@ export async function POST(request: Request) {
     const result = await sheetRequest({ action: 'paid', number: body.number });
     if (!result.ok) return fail(result.error, result.status);
     return Response.json({ success: true, number: body.number, status: 'Paid', row: result.data.row });
+  }
+  if (body.action === 'delete') {
+    if (typeof body.number !== 'string' || !invoiceNumberPattern.test(body.number)) return fail('Please check the invoice number.', 400);
+    const result = await sheetRequest({ action: 'delete', number: body.number });
+    if (!result.ok) return fail(result.error, result.status);
+    return Response.json({ success: true, number: body.number });
   }
   if (body.action !== 'save' && body.action !== 'confirm') return fail('Unknown action.', 400);
 

