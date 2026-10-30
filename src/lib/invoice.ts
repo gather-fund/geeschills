@@ -84,6 +84,7 @@ export function parseOrder(input: unknown): { error: string } | { invoice: Invoi
   if (!isoDate.test(invoice.date)) return { error: 'Please check the invoice date.' };
   if (!invoice.clientName) return { error: 'Please add the client’s name before confirming.' };
   if (!isoDate.test(invoice.eventDate)) return { error: 'Please add the event date before confirming.' };
+  if (invoice.eventDate < invoice.date) return { error: 'The event date can’t be before the invoice date.' };
   if (invoice.eventType && !eventTypes.some(type => type === invoice.eventType)) return { error: 'Please choose a listed event type.' };
   if (invoice.guests && !/^\d{1,6}$/.test(invoice.guests)) return { error: 'Please check the number of guests.' };
   if (!/^\d{1,3}$/.test(invoice.depositPercent) || Number(invoice.depositPercent) > 100) return { error: 'Please check the deposit percentage.' };

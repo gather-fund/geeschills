@@ -86,7 +86,7 @@ test('order validation and totals', () => {
   assert.ok('invoice' in parseOrder({ ...invoice, number: 'GC-2026-0042' }), 'register numbers are accepted');
   assert.equal(parsed.invoice.items.length, 3, 'unpriced lines are dropped');
   assert.deepEqual(invoiceTotals(parsed.invoice), { subtotal: 10660, total: 10660, depositPercent: 70, deposit: 7462, balance: 3198 });
-  for (const changes of [{ clientName: '' }, { eventDate: '' }, { number: 'bad number!' }, { number: 'GC-261107-042' }, { eventType: 'Picnic' }, { depositPercent: '120' }, { items: [] },
+  for (const changes of [{ clientName: '' }, { eventDate: '' }, { eventDate: '2026-11-06' }, { number: 'bad number!' }, { number: 'GC-261107-042' }, { eventType: 'Picnic' }, { depositPercent: '120' }, { items: [] },
     { items: [{ qty: 'x', description: 'Chillers', price: '200' }] }, { items: [{ qty: '1', description: '', price: '200' }] }, { items: [{ qty: '1', description: 'Chillers', price: '-5' }] }]) {
     assert.ok('error' in parseOrder({ ...invoice, ...changes }), JSON.stringify(changes));
   }

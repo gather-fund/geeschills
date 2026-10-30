@@ -80,6 +80,8 @@ export default function InvoiceBuilder() {
     ...current.filter(row => row.number !== saved.number),
   ]);
   const update = (changes: Partial<Draft>) => { setInvoice({ ...invoice, ...changes }); setNotice(null); };
+  // Events can't be booked in the past; an older saved date still shows as it was.
+  const today = new Date().toISOString().slice(0, 10);
   const field = (name: keyof Invoice) => ({
     name, value: invoice[name] as string,
     onChange: (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => update({ [name]: event.target.value }),
@@ -218,7 +220,7 @@ export default function InvoiceBuilder() {
       </fieldset>
 
       <fieldset><legend>Event</legend>
-        <div className="form-row"><label>Type<select {...field('eventType')}><option value="">Choose…</option>{eventTypes.map(type => <option key={type}>{type}</option>)}</select></label><label>Date<input type="date" {...field('eventDate')} /></label></div>
+        <div className="form-row"><label>Type<select {...field('eventType')}><option value="">Choose…</option>{eventTypes.map(type => <option key={type}>{type}</option>)}</select></label><label>Date<input type="date" min={today} {...field('eventDate')} /></label></div>
         <div className="form-row"><label>Venue<input {...field('venue')} maxLength={200} /></label><label>Guests<input type="number" min={1} {...field('guests')} /></label></div>
       </fieldset>
 

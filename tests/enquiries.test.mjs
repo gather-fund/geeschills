@@ -48,7 +48,7 @@ test('enquiry validation and mocked email delivery', async () => {
     globalThis.fetch = async (url, init) => {
       assert.equal(url, 'https://api.resend.com/emails');
       const payload = JSON.parse(init.body);
-      assert.deepEqual(payload.to, ['gloriaamankrahyeboah97@gmail.com']);
+      assert.deepEqual(payload.to, ['geeschills@gmail.com']);
       assert.equal(payload.reply_to, valid.email);
       assert.equal(payload.from, process.env.ENQUIRY_FROM_EMAIL);
       assert.match(payload.text, /Expected guests: 80/);

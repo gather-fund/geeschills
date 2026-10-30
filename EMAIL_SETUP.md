@@ -1,7 +1,7 @@
 # Enable enquiry emails on Vercel
 
 The application is prepared for the domain supplied: **geeschills.com**.
-Enquiries are delivered to **gloriaamankrahyeboah97@gmail.com**.
+Enquiries are delivered to **geeschills@gmail.com**.
 
 ## 1. Verify the sender in Resend
 
@@ -26,7 +26,7 @@ Under Project → Settings → Environment Variables, set:
 | --- | --- |
 | `RESEND_API_KEY` | Your private Resend sending API key |
 | `ENQUIRY_FROM_EMAIL` | `GEES CHILLS <enquiries@geeschills.com>` |
-| `ENQUIRY_TO_EMAIL` | `gloriaamankrahyeboah97@gmail.com` |
+| `ENQUIRY_TO_EMAIL` | `geeschills@gmail.com` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile site key (public), see section 4 |
 | `TURNSTILE_SECRET_KEY` | Turnstile secret key (private), see section 4 |
 | `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL, see section 4 |

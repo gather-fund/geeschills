@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.ENQUIRY_FROM_EMAIL;
-  const to = process.env.ENQUIRY_TO_EMAIL || 'gloriaamankrahyeboah97@gmail.com';
+  const to = process.env.ENQUIRY_TO_EMAIL || 'geeschills@gmail.com';
   if (!apiKey || !from) return fail('Email enquiries are not available yet. Please contact us on WhatsApp.', 503);
 
   try {

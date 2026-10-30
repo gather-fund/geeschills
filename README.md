@@ -33,7 +33,7 @@ The production build includes a server endpoint for email. Preview it with `npx 
 
 ## Current behaviour
 
-The enquiry form sends event details to a server endpoint using Resend. It requires a visitor email address and sets Reply-To to that address. The recipient defaults to gloriaamankrahyeboah97@gmail.com. The WhatsApp control remains available if email sending fails.
+The enquiry form sends event details to a server endpoint using Resend. It requires a visitor email address and sets Reply-To to that address. The recipient defaults to geeschills@gmail.com. The WhatsApp control remains available if email sending fails.
 
 **Account setup is still required.** Follow [EMAIL_SETUP.md](EMAIL_SETUP.md) to verify geeschills.com in Resend, add the private Vercel environment variables and test delivery.
 
