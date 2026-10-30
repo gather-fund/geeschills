@@ -24,8 +24,8 @@ const structuredData = {
       publisher: { '@id': `${site.url}/#organization` },
     },
     {
-      '@type': 'Service', '@id': `${site.url}/#cooler-hire`,
-      name: 'Event cooler hire in Ghana', serviceType: 'Cooler hire',
+      '@type': 'Service', '@id': `${site.url}/#chilling-service`,
+      name: 'Drinks chilling service for events in Ghana', serviceType: 'Drinks chilling service',
       description: site.description, url: `${site.url}/#packages`,
       provider: { '@id': `${site.url}/#organization` },
       areaServed: { '@type': 'Country', name: 'Ghana' },

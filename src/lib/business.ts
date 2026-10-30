@@ -7,7 +7,7 @@ export const business = {
   tagline: "Good times. Cold drinks.",
   address: "N39 Sun ST, Teshie Agblezaa", // e.g. 'P.O. Box …, Accra'
   email: site.email,
-  phones: ["+233 27 794 6635"],
+  phones: ["WhatsApp +233 27 794 6635", "Calls +233 20 226 2120"],
   vatNumber: "N/A", // Ghana Revenue Authority VAT number; prices are shown as VAT-inclusive
   paymentDetails:
     "VODAFONE CASH 020 226 2120 (GEES CHILLS) · Bank: …, Acc. no. …", // e.g. 'MTN MoMo 024 000 0000 (GEES CHILLS) · Bank: …, Acc. no. …'

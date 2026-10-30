@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     url: '/',
     siteName: 'GEES CHILLS',
     title: 'GEES CHILLS — You bring the people. We bring the chill.',
-    description: 'Cooler hire for get-togethers, weddings and celebrations in Ghana. Every event. The right package.',
+    description: 'Drinks chilling service for get-togethers, weddings and celebrations in Ghana. Every event. The right package.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'GEES CHILLS — You bring the people. We bring the chill.',
-    description: 'Cooler hire for get-togethers, weddings and celebrations in Ghana.',
-    images: [{ url: '/opengraph-image.jpg', alt: 'GEES CHILLS — You bring the people. We bring the chill. Cooler hire in Ghana.' }],
+    description: 'Drinks chilling service for get-togethers, weddings and celebrations in Ghana.',
+    images: [{ url: '/opengraph-image.jpg', alt: 'GEES CHILLS — You bring the people. We bring the chill. Drinks chilling service in Ghana.' }],
   },
 };
 

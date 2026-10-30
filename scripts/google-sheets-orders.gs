@@ -133,14 +133,16 @@ function syncOrder(o, number, status, confirmedAt) {
   else sheet.appendRow(row);
 }
 
-// Sequential per year: GC-2026-0001, GC-2026-0002, … The counter lives in Script Properties.
+// Year, then the day and month it was issued, then a counter that runs through the year:
+// GC-2026-3010-0001, GC-2026-0111-0002, … The counter lives in Script Properties.
 function nextNumber(now) {
   const year = now.getFullYear();
+  const dayMonth = String(now.getDate()).padStart(2, '0') + String(now.getMonth() + 1).padStart(2, '0');
   const props = PropertiesService.getScriptProperties();
   const key = 'NEXT_INVOICE_' + year;
   const next = Number(props.getProperty(key) || '1');
   props.setProperty(key, String(next + 1));
-  return 'GC-' + year + '-' + String(next).padStart(4, '0');
+  return 'GC-' + year + '-' + dayMonth + '-' + String(next).padStart(4, '0');
 }
 
 function findRow(sheet, number, column) {

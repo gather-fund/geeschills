@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;700&family=Manrope:wght@600;700;800&display=block');
+:root{--ink:#071e2b;--blue:#00aeef;--ice:#20c5f5;--pale:#edf8fc;--muted:#4a6270}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:var(--ink);font-family:'DM Sans',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{position:relative;overflow:hidden;page-break-after:always;break-after:page}
+.page:last-child{page-break-after:auto;break-after:auto}
+[data-logo] svg,[data-qr] svg{display:block;width:100%;height:auto}
+.mark{display:inline-block;width:.9em;height:.9em;vertical-align:-.08em}
+h1,h2,h3,.display{font-family:Manrope,Arial,sans-serif;font-weight:800;letter-spacing:-.04em}
+.eyebrow{font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+/* Preview-only trim guide; hidden when printing. */
+.trim{position:absolute;inset:3mm;border:.2mm dashed #ff2d7a;pointer-events:none;z-index:50;display:none}
+.show-trim .trim{display:block}

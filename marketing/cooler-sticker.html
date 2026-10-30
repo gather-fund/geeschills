@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-GH"><head><meta charset="utf-8"><title>GEES CHILLS cooler sticker (150 x 100 mm)</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* 150 x 100 mm waterproof vinyl, rounded corners (6 mm radius), plus 3 mm bleed.
+   Keep text 8 mm from the page edge. Page 2 is a smaller 100 x 100 mm round lid sticker. */
+@page{size:156mm 106mm;margin:0}
+.page{width:156mm;height:106mm}
+.side{background:var(--ink);color:#fff;display:flex;align-items:center;gap:8mm;padding:0 10mm 0 12mm}
+.side [data-logo]{width:40mm;flex:none}
+.side .eyebrow{font-size:8pt;color:var(--ice);margin-bottom:2.4mm}
+.side h1{font-size:24pt;line-height:1.02;margin-bottom:4mm}
+.side h1 em{font-style:normal;color:var(--ice)}
+.contact{display:flex;align-items:center;gap:5mm}
+.wa{font-family:Manrope,sans-serif;font-weight:800;font-size:20pt;letter-spacing:-.02em;line-height:1}
+.wa small{display:block;font-size:7pt;letter-spacing:.14em;color:var(--ice);margin-bottom:1.4mm}
+.web{font-size:10pt;font-weight:700;margin-top:2mm;color:#cfe3ea}
+.qr [data-qr]{width:22mm;border-radius:1mm;overflow:hidden}
+.foot{position:absolute;left:0;right:0;bottom:0;height:12mm;background:var(--blue);color:var(--ink);display:flex;align-items:center;justify-content:center;padding-bottom:3mm;font-size:7pt;font-weight:700;letter-spacing:.14em}
+.cut{position:absolute;inset:3mm;border-radius:6mm;border:.25mm dashed #ff2d7a;display:none;z-index:50}
+.show-trim .cut{display:block}
+/* Round lid sticker, 100 mm diameter on the same sheet size. */
+.lid{background:#fff;display:flex;align-items:center;justify-content:center}
+.disc{width:106mm;height:106mm;border-radius:50%;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink);text-align:center}
+.disc [data-logo]{width:25mm;margin-bottom:3mm}
+.disc .eyebrow{font-size:6.6pt;margin-bottom:1.4mm}
+.disc .wa{font-size:17pt}
+.disc .web{color:var(--ink);font-size:8pt;margin-top:1.4mm}
+.lid .cut{inset:auto;width:100mm;height:100mm;border-radius:50%;left:28mm;top:3mm}
+</style></head>
+<body>
+<div class="page side">
+  <div data-logo></div>
+  <div>
+    <p class="eyebrow">Drinks chilling service</p>
+    <h1>Ice-cold drinks<br><em>at your event.</em></h1>
+    <div class="contact">
+      <div><p class="wa"><small>WHATSAPP</small>027 794 6635</p><p class="web">Call 020 226 2120 · geeschills.com</p></div>
+      <div class="qr"><div data-qr="https://wa.me/233277946635?text=Hi%20GEES%20CHILLS%2C%20I%20saw%20your%20cooler%20at%20an%20event.%20I%E2%80%99d%20like%20your%20chilling%20service%20for%20my%20event."></div></div>
+    </div>
+  </div>
+  <div class="foot">PROPERTY OF GEES CHILLS · GOOD TIMES. COLD DRINKS.</div>
+  <div class="cut"></div>
+</div>
+<div class="page lid">
+  <div class="disc">
+    <div data-logo></div>
+    <p class="eyebrow">Ice-cold drinks · WhatsApp</p>
+    <p class="wa">027 794 6635</p>
+    <p class="web">geeschills.com</p>
+  </div>
+  <div class="cut"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="brand.js"></script>
+</body></html>

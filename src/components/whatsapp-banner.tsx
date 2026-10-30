@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 export default function WhatsAppBanner() {
   const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '233277946635').replace(/[\s()+-]/g, '');
   const configured = /^[1-9]\d{6,14}$/.test(number);
-  const message = encodeURIComponent('Hi GEES CHILLS! I’d like to enquire about a cooler hire package for my event.');
+  const message = encodeURIComponent('Hi GEES CHILLS! I’d like to enquire about your chilling service for my event.');
   // The enquiry section has its own WhatsApp link, so step aside instead of covering the form.
   const [hidden, setHidden] = useState(false);
   const adminPage = usePathname()?.startsWith('/admin');

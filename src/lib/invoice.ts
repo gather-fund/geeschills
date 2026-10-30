@@ -53,7 +53,8 @@ export const addDays = (isoDate: string, days: number) => {
 export const displayDate = (isoDate: string) => /^\d{4}-\d{2}-\d{2}$/.test(isoDate) ? isoDate.split('-').reverse().join('/') : isoDate;
 
 // Numbers are issued by the Google Sheet register, in sequence; a new invoice has none until saved.
-export const invoiceNumberPattern = /^GC-\d{4}-\d{4,6}$/;
+// GC-2026-3010-0001; invoices issued before the day and month were added look like GC-2026-0001.
+export const invoiceNumberPattern = /^GC-\d{4}-(\d{4}-)?\d{4,6}$/;
 
 export function blankInvoice(now = new Date()): Invoice {
   return {

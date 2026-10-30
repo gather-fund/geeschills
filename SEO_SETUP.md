@@ -4,7 +4,7 @@ Production domain: https://www.geeschills.com/
 
 Implemented:
 
-- Search title and description focused on event cooler hire in Ghana.
+- Search title and description focused on GEES CHILLS’ drinks chilling service for events in Ghana.
 - A homepage canonical URL, absolute social image URLs and Ghanaian English language metadata.
 - `/robots.txt`, allowing public pages and excluding `/api/`, with a sitemap reference.
 - `/sitemap.xml`, listing the homepage (section anchors are not separate pages).

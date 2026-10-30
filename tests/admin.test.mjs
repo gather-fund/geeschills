@@ -83,7 +83,8 @@ test('admin sign-in and sessions', () => withEnv({}, async () => {
 test('order validation and totals', () => {
   const parsed = parseOrder(invoice);
   assert.ok('invoice' in parsed, 'a new invoice has no number yet');
-  assert.ok('invoice' in parseOrder({ ...invoice, number: 'GC-2026-0042' }), 'register numbers are accepted');
+  assert.ok('invoice' in parseOrder({ ...invoice, number: 'GC-2026-3010-0042' }), 'register numbers are accepted');
+  assert.ok('invoice' in parseOrder({ ...invoice, number: 'GC-2026-0042' }), 'numbers issued before the day and month was added still open');
   assert.equal(parsed.invoice.items.length, 3, 'unpriced lines are dropped');
   assert.deepEqual(invoiceTotals(parsed.invoice), { subtotal: 10660, total: 10660, depositPercent: 70, deposit: 7462, balance: 3198 });
   for (const changes of [{ clientName: '' }, { eventDate: '' }, { eventDate: '2026-11-06' }, { number: 'bad number!' }, { number: 'GC-261107-042' }, { eventType: 'Picnic' }, { depositPercent: '120' }, { items: [] },

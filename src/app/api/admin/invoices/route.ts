@@ -8,7 +8,7 @@ const fail = (error: string, status: number) => Response.json({ error }, { statu
 const statuses = ['Quote', 'Confirmed', 'Paid'];
 const text = (value: unknown, max = 200) => typeof value === 'string' ? value.slice(0, max) : String(value ?? '').slice(0, max);
 
-// GET lists the register, or returns one invoice with ?number=GC-2026-0001.
+// GET lists the register, or returns one invoice with ?number=GC-2026-3010-0001.
 export async function GET(request: Request) {
   // Checked here as well as in proxy.ts, so the register stays protected even if the matcher changes.
   if (!hasSession(request)) return fail('Your sign-in has expired. Please sign in again.', 401);

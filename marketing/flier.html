@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-GH"><head><meta charset="utf-8"><title>GEES CHILLS flier (A5)</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* A5 (148 x 210 mm) plus 3 mm bleed on every side. Keep text 9 mm from the page edge. */
+@page{size:154mm 216mm;margin:0}
+.page{width:154mm;height:216mm}
+.photo{position:absolute;inset:0 0 auto 0;height:122mm;background:#041823 url(assets/sobolo-tub.jpg) center 38%/cover}
+.photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,24,35,.55) 0,rgba(4,24,35,.05) 28%,rgba(4,24,35,.15) 45%,rgba(4,24,35,.94) 88%)}
+.top{position:absolute;z-index:2;top:9mm;left:9mm;right:9mm;display:flex;justify-content:space-between;align-items:flex-start}
+.top [data-logo]{width:17mm}
+.top .eyebrow{color:#fff;font-size:6.6pt;text-align:right;line-height:1.7;margin-top:1mm}
+.hero{position:absolute;z-index:2;left:9mm;right:9mm;bottom:calc(216mm - 122mm + 6mm);color:#fff}
+.hero .eyebrow{font-size:6.8pt;color:var(--ice);margin-bottom:3mm}
+.hero h1{font-size:29pt;line-height:1.02}
+.hero h1 em{font-style:normal;color:var(--ice)}
+.band{position:absolute;top:122mm;left:0;right:0;height:11mm;background:var(--blue);display:flex;align-items:center;justify-content:center;gap:2.6mm;font-size:7pt;font-weight:700;letter-spacing:.09em;color:var(--ink)}
+.body{position:absolute;top:133mm;left:9mm;right:9mm;height:44mm;display:grid;grid-template-columns:1fr 1fr;gap:7mm;padding-top:6mm}
+.body h2{font-size:12.5pt;margin-bottom:2.6mm;line-height:1.1}
+.body h2 em{font-style:normal;color:#0099c8}
+.list{list-style:none;font-size:8pt;line-height:1.5}
+.list li{display:flex;gap:2mm;align-items:baseline;padding:.7mm 0;border-bottom:.2mm solid #d7e5eb}
+.list li:last-child{border:0}
+.list .mark{color:#0099c8;width:.8em;height:.8em;flex:none}
+.steps li span{font-weight:700;color:#0089b3;font-size:7pt;width:5mm;flex:none}
+.small{font-size:6.6pt;color:var(--muted);margin-left:auto;white-space:nowrap}
+.cta{position:absolute;left:0;right:0;bottom:0;height:39mm;background:var(--ink);color:#fff;padding:6mm 9mm 9mm;display:flex;justify-content:space-between;align-items:center;gap:6mm}
+.cta .eyebrow{font-size:6.6pt;color:#9bd8ea;margin-bottom:1.6mm}
+.cta .wa{font-family:Manrope,sans-serif;font-weight:800;font-size:21pt;letter-spacing:-.02em;line-height:1}
+.cta .wa small{display:block;font-size:7.5pt;font-weight:700;letter-spacing:.12em;color:var(--ice);margin-bottom:1.2mm}
+.cta .nums{display:flex;gap:6mm}.cta .nums .wa{font-size:17pt}
+.cta .links{margin-top:2.4mm;font-size:8pt;color:#cfe3ea;display:flex;gap:4mm}
+.cta .links b{color:#fff}
+.qr{text-align:center;font-size:6pt;letter-spacing:.12em;font-weight:700;color:#9bd8ea}
+.qr [data-qr]{width:23mm;margin-bottom:1.4mm;border-radius:1mm;overflow:hidden}
+</style></head>
+<body>
+<div class="page">
+  <div class="photo"></div>
+  <div class="top"><div data-logo></div><p class="eyebrow">Drinks chilling service<br>for events in Ghana</p></div>
+  <div class="hero">
+    <p class="eyebrow">Good times. Cold drinks.</p>
+    <h1>You bring the people.<br><em>We bring the chill.</em></h1>
+  </div>
+  <div class="band">
+    <span>WEDDINGS</span><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>
+    <span>BIRTHDAYS</span><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>
+    <span>ANNIVERSARIES</span><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>
+    <span>FUNERALS</span><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>
+    <span>CORPORATE</span>
+  </div>
+  <div class="body">
+    <div>
+      <h2>We chill.<br><em>You celebrate.</em></h2>
+      <ul class="list">
+        <li><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>Your drinks, ice cold all day</li>
+        <li><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>Coolers, ice &amp; setup supplied</li>
+        <li><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>Collection after the event</li>
+        <li><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>Waiters<span class="small">on request</span></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Booking is<br><em>easy.</em></h2>
+      <ul class="list steps">
+        <li><span>01</span>Send your date, location &amp; guest count</li>
+        <li><span>02</span>We agree your package &amp; quote</li>
+        <li><span>03</span>Confirm, relax and enjoy</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cta">
+    <div>
+      <p class="eyebrow">Book your chilling service</p>
+      <div class="nums"><p class="wa"><small>WHATSAPP</small>027 794 6635</p><p class="wa"><small>CALL</small>020 226 2120</p></div>
+      <p class="links"><b>geeschills.com</b><span>geeschills@gmail.com</span></p>
+    </div>
+    <div class="qr"><div data-qr="https://wa.me/233277946635?text=Hi%20GEES%20CHILLS%2C%20I%20saw%20your%20flier.%20I%E2%80%99d%20like%20your%20chilling%20service%20for%20my%20event."></div>SCAN TO CHAT</div>
+  </div>
+  <div class="trim"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="brand.js"></script>
+</body></html>

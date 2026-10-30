@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en-GH"><head><meta charset="utf-8"><title>GEES CHILLS business card (85 x 55 mm)</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* 85 x 55 mm plus 3 mm bleed. Page 1 = front, page 2 = back. Keep text 6 mm from the page edge. */
+@page{size:91mm 61mm;margin:0}
+.page{width:91mm;height:61mm}
+.front{background:var(--ink);color:#fff;display:flex;align-items:center;gap:6mm;padding:0 8mm 0 10mm}
+.front [data-logo]{width:22mm;flex:none}
+.front h1{font-size:13pt;line-height:1.05;margin-bottom:2.4mm}
+.front h1 em{font-style:normal;color:var(--ice)}
+.front p{font-size:6.6pt;line-height:1.55;color:#b7ced8}
+.front .eyebrow{font-size:5.4pt;color:var(--ice);margin-bottom:2mm;letter-spacing:.18em}
+.front::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5mm;background:var(--blue)}
+.back{background:#fff;padding:8mm 8mm 0 9mm;display:grid;grid-template-columns:1fr 19mm;gap:4mm}
+.back h2{font-size:10pt;letter-spacing:-.02em;margin-bottom:2.6mm}
+.back h2 em{font-style:normal;color:#0099c8}
+.rows{font-size:7pt;line-height:1.35}
+.rows div{display:flex;flex-direction:column;margin-bottom:1.5mm}
+.rows small{font-size:4.8pt;letter-spacing:.16em;font-weight:700;color:#0089b3}
+.rows b{font-family:Manrope,sans-serif;font-weight:800;font-size:9.5pt;letter-spacing:-.01em}
+.rows .pair{flex-direction:row;gap:3.5mm}.rows .pair div{margin:0}.rows .pair b{font-size:8.6pt}
+.qr{text-align:center;font-size:4.6pt;letter-spacing:.14em;font-weight:700;color:var(--muted);padding-top:1mm}
+.qr [data-qr]{width:19mm;margin-bottom:1.2mm}
+.strip{position:absolute;left:0;right:0;bottom:0;height:8.5mm;background:var(--blue);display:flex;align-items:center;justify-content:center;gap:1.8mm;font-size:5pt;font-weight:700;letter-spacing:.12em;padding-bottom:3mm}
+</style></head>
+<body>
+<div class="page front">
+  <div data-logo></div>
+  <div>
+    <p class="eyebrow">Drinks chilling service</p>
+    <h1>Good times.<br><em>Cold drinks.</em></h1>
+    <p>We keep your drinks ice cold at weddings, birthdays, funerals and corporate events.</p>
+  </div>
+  <div class="trim"></div>
+</div>
+<div class="page back">
+  <div>
+    <h2>Let’s plan <em>your chill.</em></h2>
+    <div class="rows">
+      <div class="pair"><div><small>WHATSAPP</small><b>027 794 6635</b></div><div><small>CALL</small><b>020 226 2120</b></div></div>
+      <div><small>WEB</small>geeschills.com</div>
+      <div><small>EMAIL</small>geeschills@gmail.com</div>
+      <div><small>FIND US</small>N39 Sun St, Teshie Agblezaa, Accra</div>
+    </div>
+  </div>
+  <div class="qr"><div data-qr="https://wa.me/233277946635?text=Hi%20GEES%20CHILLS%2C%20I%20got%20your%20card.%20I%E2%80%99d%20like%20your%20chilling%20service%20for%20my%20event."></div>SCAN TO CHAT</div>
+  <div class="strip">WEDDINGS · BIRTHDAYS · ANNIVERSARIES · FUNERALS · CORPORATE</div>
+  <div class="trim"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="brand.js"></script>
+</body></html>

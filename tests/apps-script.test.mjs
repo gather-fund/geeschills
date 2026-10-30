@@ -51,12 +51,13 @@ test('Apps Script register: numbering, statuses and safety', () => {
   assert.deepEqual(sheets.call({ secret: 'wrong', action: 'list' }), { ok: false, error: 'unauthorized' });
 
   // Numbers are issued in sequence and never reused.
-  const year = new Date().getFullYear();
+  const now = new Date(), year = now.getFullYear();
+  const day = `${String(now.getDate()).padStart(2, '0')}${String(now.getMonth() + 1).padStart(2, '0')}`;
   const first = sheets.call({ action: 'save', order: order() });
   const second = sheets.call({ action: 'save', order: order('', 'Kofi') });
-  assert.deepEqual([first.number, first.status], [`GC-${year}-0001`, 'Quote']);
-  assert.equal(second.number, `GC-${year}-0002`);
-  assert.equal(sheets.call({ action: 'save', order: order(`GC-${year}-0999`) }).error, 'unknown invoice', 'numbers only come from the register');
+  assert.deepEqual([first.number, first.status], [`GC-${year}-${day}-0001`, 'Quote']);
+  assert.equal(second.number, `GC-${year}-${day}-0002`);
+  assert.equal(sheets.call({ action: 'save', order: order(`GC-${year}-${day}-0999`) }).error, 'unknown invoice', 'numbers only come from the register');
 
   // Saving again updates the same row instead of issuing a new number.
   const resaved = sheets.call({ action: 'save', order: order(first.number, 'Patricia Mensah') });
@@ -87,7 +88,7 @@ test('Apps Script register: numbering, statuses and safety', () => {
   assert.equal(sheets.call({ action: 'delete', number: first.number }).error, 'unknown invoice');
   assert.equal(orders.rows.length, 1, 'order row removed, header kept');
   assert.deepEqual(sheets.call({ action: 'list' }).invoices.map(row => row.number), [second.number]);
-  assert.equal(sheets.call({ action: 'save', order: order() }).number, `GC-${year}-0003`, 'deleted numbers are not reissued');
+  assert.equal(sheets.call({ action: 'save', order: order() }).number, `GC-${year}-${day}-0003`, 'deleted numbers are not reissued');
   assert.equal(sheets.call({ action: 'delete', number: second.number }).ok, true, 'quotes without an order row delete too');
 
   // Formula-like text is stored as plain text.
