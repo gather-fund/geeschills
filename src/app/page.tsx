@@ -1,4 +1,5 @@
 import LandingPage from '@/components/landing-page';
+import MotionEffects from '@/components/motion-effects';
 import type { Metadata } from 'next';
 import { site } from '../lib/site';
 
@@ -34,5 +35,5 @@ const structuredData = {
 };
 
 export default function Home() {
-  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} /><LandingPage /></>;
+  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} /><LandingPage /><MotionEffects /></>;
 }

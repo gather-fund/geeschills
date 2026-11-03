@@ -5,7 +5,7 @@ import { checkRateLimit, clientIp } from './rate-limit';
 // needed: the cookie carries its expiry and an HMAC keyed by ADMIN_PASSWORD, so changing the
 // password signs everyone out.
 export const sessionCookie = 'gc_admin';
-const sessionSeconds = 12 * 60 * 60;
+const sessionSeconds = 30 * 24 * 60 * 60; // 30 days, so the home-screen app rarely asks to sign in
 const failedSignInLimit = 20;
 
 export const adminConfigured = () => (process.env.ADMIN_PASSWORD ?? '').length >= 12;

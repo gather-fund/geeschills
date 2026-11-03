@@ -8,10 +8,12 @@ export const packages = [
 
 const icons = { single: <Asterisk />, double: <><Asterisk /><Asterisk /></>, ring: <Ring /> };
 
+// Each card sits in a flat .t-tilt wrapper so it can lean toward the mouse (see motion-effects.tsx).
 export default function PackageCards({ onSelect }: { onSelect: () => void }) {
-  return <div className="package-grid">{packages.map((item, index) => <article className={index === 1 ? 'blue' : undefined} key={item.id}>
+  return <div className="package-grid">{packages.map((item, index) => <div className="t-tilt" key={item.id}><article className={`t-tilt-card${index === 1 ? ' blue' : ''}`}>
     <span className="number">{item.number}</span><div aria-hidden="true" className={`event-icon${item.icon === 'double' ? ' double' : ''}`}>{icons[item.icon]}</div>
     <h3>{item.title}</h3><p>{item.description}</p>
     <button type="button" className="package-link" onClick={onSelect}>{item.action}<span aria-hidden="true">↗</span></button>
-  </article>)}</div>;
+    <span className="t-tilt-glare" aria-hidden="true" />
+  </article></div>)}</div>;
 }

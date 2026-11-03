@@ -7,7 +7,7 @@ Goal: get people in Accra to send a WhatsApp message asking to book your drinks 
 | Channel | Why | Do this |
 |---|---|---|
 | **WhatsApp Business** | Where bookings happen | Business profile with logo, hours, address, geeschills.com. Add a catalogue (Small get-together, Big celebration, Everything in between). Set a greeting message, quick replies (prices, what's included, payment), and labels (New enquiry, Quoted, Booked, Paid, Done). |
-| **Instagram** | Looks and trust for weddings and birthdays | Same handle everywhere (check `geeschills` first). Bio: "Drinks chilling service for events in Ghana · Ice-cold drinks, all day · WhatsApp 027 794 6635 · Call 020 226 2120". Link to geeschills.com. |
+| **Instagram** | Looks and trust for weddings and birthdays | Instagram **@geeschills_**, TikTok **@geeschillsgh**. Full setup and scripts in [TIKTOK_INSTAGRAM_PLAN.md](TIKTOK_INSTAGRAM_PLAN.md). Bio: "Drinks chilling service for events in Ghana · Ice-cold drinks, all day · WhatsApp 027 794 6635 · Call 020 226 2120". Link to geeschills.com. |
 | **TikTok** | Reach new people for free | Post the same short videos as Instagram Reels. |
 | **Facebook page** | Older customers, funerals, churches, community groups | Share every Reel there too. Join Accra event, wedding and funeral-planning groups. |
 | **Google Business Profile** | Shows up for "drinks chilling service Accra" and "cooler hire Accra" searches (people still search the second) and on Maps | Add photos, phone, website and service area. Ask every happy client for a Google review. |

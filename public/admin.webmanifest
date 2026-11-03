@@ -1,0 +1,16 @@
+{
+  "name": "GEES CHILLS Invoices",
+  "short_name": "GC Invoices",
+  "description": "GEES CHILLS admin: create and manage invoices.",
+  "id": "/admin/",
+  "start_url": "/admin/invoice/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#071e2b",
+  "icons": [
+    { "src": "/app-icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/app-icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

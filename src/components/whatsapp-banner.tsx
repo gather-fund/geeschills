@@ -23,6 +23,6 @@ export default function WhatsAppBanner() {
 
   if (adminPage) return null;
   return <aside className={`whatsapp-banner${hidden ? ' is-hidden' : ''}`} aria-label="WhatsApp contact">
-      {configured ? <a className="whatsapp-contact" href={`https://wa.me/${number}?text=${message}`} target="_blank" rel="noopener noreferrer" aria-label="Chat with GEES CHILLS on WhatsApp (opens in a new tab)" tabIndex={hidden ? -1 : undefined}>{content}</a> : <span className="whatsapp-contact whatsapp-unconfigured" aria-disabled="true">{content}</span>}
+      {configured ? <a className="whatsapp-contact" href={`https://wa.me/${number}?text=${message}`} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp (opens in a new tab)" tabIndex={hidden ? -1 : undefined}>{content}</a> : <span className="whatsapp-contact whatsapp-unconfigured" aria-disabled="true">{content}</span>}
   </aside>;
 }

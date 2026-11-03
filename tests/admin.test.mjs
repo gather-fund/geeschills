@@ -65,8 +65,8 @@ test('admin sign-in and sessions', () => withEnv({}, async () => {
   assert.match(cookie, /; Secure/, 'secure over https');
   assert.equal(hasSession(withCookie(sessionFrom(ok))), true);
   assert.equal(hasSession(withCookie('gc_admin=9999999999999.forged')), false, 'forged signature');
-  const expired = sessionCookieHeader(new Request(`${site}/`), Date.now() - 13 * 60 * 60 * 1000).split(';')[0];
-  assert.equal(hasSession(withCookie(expired)), false, 'expired after 12 hours');
+  const expired = sessionCookieHeader(new Request(`${site}/`), Date.now() - 31 * 24 * 60 * 60 * 1000).split(';')[0];
+  assert.equal(hasSession(withCookie(expired)), false, 'expired after 30 days');
   process.env.ADMIN_PASSWORD = 'a-different-password';
   assert.equal(hasSession(withCookie(sessionFrom(ok))), false, 'changing the password signs everyone out');
   process.env.ADMIN_PASSWORD = password;

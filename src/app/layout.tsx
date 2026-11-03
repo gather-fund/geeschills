@@ -30,6 +30,10 @@ export const metadata: Metadata = {
   },
 };
 
+// Runs before paint so revealed sections start hidden instead of flashing.
+// If the page's motion script never starts (e.g. JavaScript fails), show everything after 2.5s.
+const motionScript = `document.documentElement.classList.add('motion');setTimeout(function(){if(!window.__motionReady)document.documentElement.classList.remove('motion')},2500);`;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en-GH"><body>{children}<WhatsAppBanner /></body></html>;
+  return <html lang="en-GH" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: motionScript }} /></head><body>{children}<WhatsAppBanner /></body></html>;
 }
