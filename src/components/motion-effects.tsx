@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 const REVEAL_GROUPS = [
   '.hero-copy', '.hero-art', '.occasions', '.section-heading', '.package-grid',
   '.chill-photo', '.chill-story-copy', '.how > div:first-child', '.how ol',
-  '.video-frame', '.film > div:last-child', '.enquiry > div:first-child', '.enquiry form', '.faq',
+  '.video-frame', '.film > div:last-child', '.enquiry > div:first-child', '.enquiry form', '.faq', '.footer-cta',
 ].join(',');
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';

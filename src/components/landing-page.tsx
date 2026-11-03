@@ -1,11 +1,9 @@
 "use client";
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import PackageCards from './package-cards';
 import EnquiryForm from './enquiry-form';
-import { Asterisk, InstagramIcon, TikTokIcon } from './icons';
-import { site } from '../lib/site';
-
-const socialIcons: Record<(typeof site.socials)[number]['name'], ReactNode> = { Instagram: <InstagramIcon />, TikTok: <TikTokIcon /> };
+import { Asterisk } from './icons';
+import SiteFooter from './site-footer';
 import { eventTypes } from '../lib/enquiry-options';
 
 export default function LandingPage() {
@@ -33,5 +31,5 @@ export default function LandingPage() {
 <section className="film section" id="film"><div className="video-frame"><video ref={video} controls={videoStarted} playsInline preload="none" poster="/assets/promo-v10-poster.jpg" aria-label="GEES CHILLS 24-second promotional video" onPlay={() => setVideoStarted(true)} onClick={videoStarted ? undefined : playVideo}><source src="/assets/promo-v10.mp4" type="video/mp4" />Your browser does not support video.</video>{!videoStarted && <button type="button" className="play-button" onClick={playVideo}><span className="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5.5v13l10.5-6.5L8 5.5Z" /></svg></span><span>Play the film <small>0:24</small></span></button>}</div><div><p className="eyebrow">MEET GEES CHILLS</p><h2>Cold drinks.<br />Warm company.<br /><em>Great memories.</em></h2><p>From the first guest to the last toast, cold drinks belong at the heart of a good gathering.</p><a className="text-link" href="#enquire">Let’s talk about your event <span aria-hidden="true">↗</span></a></div></section>
 <section className="enquiry section" id="enquire"><div><p className="eyebrow">GOT A DATE IN MIND?</p><h2>Let’s make<br />it <em>chilled.</em></h2><p>Tell us a little about your event and we’ll help you find the right package.</p><div className="contact-stub"><strong>Let’s talk about your event</strong><a className="contact-link" href="https://wa.me/233277946635" target="_blank" rel="noopener noreferrer"><span><small>WhatsApp</small>+233 27 794 6635</span><span aria-hidden="true">↗</span></a><a className="contact-link" href="mailto:geeschills@gmail.com"><span><small>Email</small>geeschills@gmail.com</span><span aria-hidden="true">↗</span></a></div></div><EnquiryForm /></section>
 <section className="faq section"><p className="eyebrow">A FEW THINGS TO KNOW</p><h2>Before the good times.</h2><details><summary>Can you cater for my event size?</summary><p>We plan packages for small gatherings, large celebrations and everything in between. Share your guest count and drinks plan so we can discuss a suitable setup.</p></details><details><summary>Can I include ice and delivery?</summary><p>Ask about ice, delivery, setup and collection in your enquiry. The available options, timings and costs will be agreed in your quote.</p></details><details><summary>Is sending an enquiry a confirmed booking?</summary><p>No. Your booking is confirmed only after availability, your package and payment arrangements have been agreed. Sending an enquiry does not reserve your date.</p></details></section>
-</main><footer><a className="brand" href="#"><span className="logo"><img src="/assets/logo-mark.jpeg" alt="" width="345" height="411" /></span><span>GEES CHILLS<small>EVERY EVENT. THE RIGHT PACKAGE.</small></span></a><span>Good times start here. Ghana.</span><ul className="footer-socials" aria-label="Social media">{site.socials.map(social => <li key={social.name}><a href={social.url} target="_blank" rel="noopener noreferrer" aria-label={`${social.name} ${social.handle} (opens in a new tab)`}>{socialIcons[social.name]}</a></li>)}</ul><a className="footer-link" href="#enquire">Let’s plan your event <span aria-hidden="true">↗</span></a></footer></>;
+</main><SiteFooter /></>;
 }

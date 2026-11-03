@@ -1,19 +1,26 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { FOOTER_ID } from './site-footer';
+
+const STEP_ASIDE_IDS = ['enquire', FOOTER_ID];
 
 export default function WhatsAppBanner() {
   const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '233277946635').replace(/[\s()+-]/g, '');
   const configured = /^[1-9]\d{6,14}$/.test(number);
   const message = encodeURIComponent('Hi GEES CHILLS! I’d like to enquire about your chilling service for my event.');
-  // The enquiry section has its own WhatsApp link, so step aside instead of covering the form.
+  // The enquiry section and the footer have their own WhatsApp links, so step aside instead of covering them.
   const [hidden, setHidden] = useState(false);
   const adminPage = usePathname()?.startsWith('/admin');
   useEffect(() => {
-    const enquiry = document.getElementById('enquire');
-    if (!enquiry) return;
-    const observer = new IntersectionObserver(([entry]) => setHidden(entry.isIntersecting), { rootMargin: '0px 0px -25% 0px' });
-    observer.observe(enquiry);
+    const targets = STEP_ASIDE_IDS.map(id => document.getElementById(id)).filter((el): el is HTMLElement => el !== null);
+    if (!targets.length) return;
+    const visible = new Set<Element>();
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target);
+      setHidden(visible.size > 0);
+    }, { rootMargin: '0px 0px -25% 0px' });
+    targets.forEach(el => observer.observe(el));
     return () => observer.disconnect();
   }, []);
   const content = <>
