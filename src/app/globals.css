@@ -397,3 +397,8 @@ summary::after { transition: transform 400ms var(--acc-ease) !important; }
 .button, nav > a:not(.button), .footer-link, .package-link, .text-link, .contact-link, .choice, summary {
   transition-duration: 250ms;
 }
+
+/* Footer social links: 44px tap targets, icon only. */
+.footer-socials{display:flex;gap:4px;margin:0;padding:0;list-style:none}
+.footer-socials a{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;color:var(--ink);font-size:21px;transition:color .15s,background .15s}
+.footer-socials a:hover{color:#006886;background:#fff}

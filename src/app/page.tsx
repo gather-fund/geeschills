@@ -13,6 +13,7 @@ const structuredData = {
       name: site.name, url: `${site.url}/`,
       logo: `${site.url}/apple-icon.png`,
       email: site.email, telephone: site.telephone,
+      sameAs: site.socials.map(social => social.url),
       contactPoint: {
         '@type': 'ContactPoint', telephone: site.telephone,
         email: site.email, contactType: 'customer service',
