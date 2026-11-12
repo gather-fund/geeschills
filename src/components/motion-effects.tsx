@@ -1,14 +1,17 @@
 "use client";
+import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
-// Visible transitions for the landing page (transitions-dev: texts reveal,
+// Visible transitions for the public pages (transitions-dev: texts reveal,
 // accordion expand, card hover tilt). Works on the page's existing markup;
-// the matching styles are at the end of globals.css.
+// the matching styles are at the end of globals.css. It lives in the shared
+// layout, so it re-runs on each page change to pick up the new page's markup.
 
 const REVEAL_GROUPS = [
   '.hero-copy', '.hero-art', '.occasions', '.section-heading', '.package-grid',
   '.chill-photo', '.chill-story-copy', '.how > div:first-child', '.how ol',
   '.video-frame', '.film > div:last-child', '.enquiry > div:first-child', '.enquiry form', '.faq', '.footer-cta',
+  '.page-intro-copy', '.steps', '.explore-grid', '.next-step',
 ].join(',');
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
@@ -17,6 +20,7 @@ const TILT_MAX = 14; // degrees at the card edges
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export default function MotionEffects() {
+  const pathname = usePathname();
   useEffect(() => {
     (window as Window & { __motionReady?: boolean }).__motionReady = true;
     const cleanups: Array<() => void> = [];
@@ -103,7 +107,7 @@ export default function MotionEffects() {
     });
 
     return () => cleanups.forEach((fn) => fn());
-  }, []);
+  }, [pathname]);
 
   return null;
 }

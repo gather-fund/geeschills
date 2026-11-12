@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { isPreview, site } from '../lib/site';
+import { publicPages } from '../lib/routes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // Section anchors are part of the homepage, not separate indexable pages.
-  return isPreview ? [] : [{ url: `${site.url}/` }];
+  return isPreview ? [] : publicPages.map(path => ({ url: `${site.url}${path}` }));
 }

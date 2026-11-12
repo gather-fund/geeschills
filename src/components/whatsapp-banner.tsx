@@ -11,8 +11,11 @@ export default function WhatsAppBanner() {
   const message = encodeURIComponent('Hi GEES CHILLS! I’d like to enquire about your chilling service for my event.');
   // The enquiry section and the footer have their own WhatsApp links, so step aside instead of covering them.
   const [hidden, setHidden] = useState(false);
-  const adminPage = usePathname()?.startsWith('/admin');
+  const pathname = usePathname();
+  const adminPage = pathname?.startsWith('/admin');
   useEffect(() => {
+    // Re-run on each page change: the enquiry section only exists on the enquiry page.
+    setHidden(false);
     const targets = STEP_ASIDE_IDS.map(id => document.getElementById(id)).filter((el): el is HTMLElement => el !== null);
     if (!targets.length) return;
     const visible = new Set<Element>();
@@ -22,7 +25,7 @@ export default function WhatsAppBanner() {
     }, { rootMargin: '0px 0px -25% 0px' });
     targets.forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
   const content = <>
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.7 7.5L3 20.5l1.4-4.6a8.5 8.5 0 1 1 16.1-4.3Z" /><path d="M8.2 7.5c.3-.2.6-.1.8.3l.8 1.6c.1.3 0 .5-.4.9l-.4.4c.7 1.6 1.8 2.7 3.4 3.4l.5-.6c.2-.3.5-.5.8-.3l1.8.9c.3.2.4.4.2.8-.3.9-1 1.4-2 1.3-3.3-.4-6.5-3.5-7-6.6-.2-1 .4-1.8 1.5-2.1Z" /></svg>
     <span>{configured ? 'Chat with us' : 'WhatsApp · number coming soon'}</span>

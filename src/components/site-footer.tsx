@@ -1,6 +1,9 @@
+import Link from 'next/link';
+import FooterCta from './footer-cta';
 import { Fragment, type ReactNode } from 'react';
 import { Asterisk, InstagramIcon, TikTokIcon } from './icons';
 import { site } from '../lib/site';
+import { navLinks, routes } from '../lib/routes';
 
 // The page id the floating WhatsApp button watches, so it steps aside here as it does for the form.
 export const FOOTER_ID = 'site-footer';
@@ -16,25 +19,19 @@ const contacts = [
 ];
 
 const explore = [
-  { label: 'The packages', href: '#packages' },
-  { label: 'How it works', href: '#how' },
-  { label: 'The film', href: '#film' },
-  { label: 'Enquire', href: '#enquire' },
+  { label: 'Home', href: routes.home },
+  ...navLinks,
+  { label: 'Enquire', href: routes.enquire },
 ];
 
-/** Landing page footer: closing call to action, and contact and social links. */
+/** Site footer: closing call to action, and contact and social links. */
 export default function SiteFooter() {
   // The phrases run twice so the strip can loop without a gap; the copy is decorative.
   const marqueeRun = MARQUEE_PHRASES.map(phrase => <Fragment key={phrase}><span>{phrase}</span><Asterisk /></Fragment>);
   return <footer className="site-footer" id={FOOTER_ID}>
     <div className="footer-marquee" aria-hidden="true"><div className="footer-marquee-track"><span>{marqueeRun}</span><span>{marqueeRun}</span></div></div>
     <div className="footer-inner">
-      <div className="footer-cta">
-        <p className="eyebrow"><span className="dot"></span> GOT AN EVENT COMING UP?</p>
-        <h2>Let’s get <em>chilling.</em></h2>
-        <p>Tell us the date, the place and the guest count. We’ll bring the coolers, the ice and the good times.</p>
-        <a className="button footer-button" href="#enquire">Plan your event <span aria-hidden="true">↗</span></a>
-      </div>
+      <FooterCta />
       <div className="footer-columns">
         <div>
           <h3 className="footer-label">Talk to us</h3>
@@ -46,7 +43,7 @@ export default function SiteFooter() {
         </div>
         <div>
           <h3 className="footer-label">Explore</h3>
-          <ul className="footer-list footer-explore">{explore.map(link => <li key={link.href}><a href={link.href}>{link.label}</a></li>)}</ul>
+          <ul className="footer-list footer-explore">{explore.map(link => <li key={link.href}><Link href={link.href}>{link.label}</Link></li>)}</ul>
         </div>
       </div>
     </div>
