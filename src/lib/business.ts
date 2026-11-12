@@ -1,3 +1,4 @@
+import { contactNumbers } from "./contact";
 import { site } from "./site";
 
 // Details printed on GEES CHILLS invoices. Fill in the empty values before sending invoices;
@@ -7,7 +8,7 @@ export const business = {
   tagline: "Good times. Cold drinks.",
   address: "N39 Sun ST, Teshie Agblezaa", // e.g. 'P.O. Box …, Accra'
   email: site.email,
-  phones: ["WhatsApp +233 27 794 6635", "Calls +233 20 226 2120"],
+  phones: [`WhatsApp ${contactNumbers.whatsapp.display}`, `Calls ${contactNumbers.call.display}`],
   vatNumber: "N/A", // Ghana Revenue Authority VAT number; prices are shown as VAT-inclusive
   paymentDetails:
     "VODAFONE CASH 020 226 2120 (GEES CHILLS) · Bank: …, Acc. no. …", // e.g. 'MTN MoMo 024 000 0000 (GEES CHILLS) · Bank: …, Acc. no. …'

@@ -34,8 +34,7 @@ html{scroll-padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 .whatsapp-contact{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:64px;padding:16px 26px;border-radius:4px;background:#0f7d3b;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:18px;font-weight:700;line-height:1.4;box-shadow:0 6px 24px #071e2b24;transition:background .15s}
 .whatsapp-contact>svg{width:34px;height:34px;flex-shrink:0}
 .whatsapp-contact:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
-.whatsapp-unconfigured{background:#d9eee4;color:#244d3a}
-@media(max-width:620px){.whatsapp-banner{right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}.whatsapp-contact{min-height:56px;padding:12px 21px;font-size:16px;gap:10px}.whatsapp-contact>svg{width:30px;height:30px}.whatsapp-contact:not(.whatsapp-unconfigured){width:56px;padding:0}.whatsapp-contact:not(.whatsapp-unconfigured)>span{display:none}}
+@media(max-width:620px){.whatsapp-banner{right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}.whatsapp-contact{min-height:56px;padding:12px 21px;font-size:16px;gap:10px}.whatsapp-contact>svg{width:30px;height:30px}.whatsapp-contact{width:56px;padding:0}.whatsapp-contact>span{display:none}}
 
 /* Keep narrow layouts usable without shrinking text or clipping grid children. */
 .hero>*,.how>*,.film>*,.enquiry>*,.chill-story>*,.package-grid>*{min-width:0}
