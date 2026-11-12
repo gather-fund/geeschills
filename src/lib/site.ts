@@ -1,3 +1,5 @@
+import { contactNumbers } from "./contact";
+
 export const site = {
   url: "https://www.geeschills.com",
   name: "GEES CHILLS",
@@ -5,7 +7,7 @@ export const site = {
   description:
     "Ice-cold drinks for weddings, birthdays, funerals, corporate events and family gatherings in Ghana. GEES CHILLS brings the coolers, ice and setup. Find your package and enquire about your event.",
   email: "geeschills@gmail.com",
-  telephone: "+233202262120", // calls; WhatsApp is +233 27 794 6635
+  telephone: contactNumbers.call.e164, // calls; WhatsApp is contactNumbers.whatsapp
   socials: [
     { name: "Instagram", handle: "@geeschills_", url: "https://www.instagram.com/geeschills_/" },
     { name: "TikTok", handle: "@geeschillsgh", url: "https://www.tiktok.com/@geeschillsgh" },

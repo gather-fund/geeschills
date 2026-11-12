@@ -2,6 +2,7 @@ import Link from 'next/link';
 import FooterCta from './footer-cta';
 import { Fragment, type ReactNode } from 'react';
 import { Asterisk, InstagramIcon, TikTokIcon } from './icons';
+import { contactNumbers, whatsappUrl } from '../lib/contact';
 import { site } from '../lib/site';
 import { navLinks, routes } from '../lib/routes';
 
@@ -13,8 +14,8 @@ const MARQUEE_PHRASES = ['Ice cold', 'Guest ready', 'Good times', 'Served chille
 const socialIcons: Record<(typeof site.socials)[number]['name'], ReactNode> = { Instagram: <InstagramIcon />, TikTok: <TikTokIcon /> };
 
 const contacts = [
-  { label: 'WhatsApp', value: '+233 27 794 6635', href: 'https://wa.me/233277946635', external: true },
-  { label: 'Call', value: '+233 20 226 2120', href: `tel:${site.telephone}`, external: false },
+  { label: 'WhatsApp', value: contactNumbers.whatsapp.display, href: whatsappUrl(), external: true },
+  { label: 'Call', value: contactNumbers.call.display, href: `tel:${contactNumbers.call.e164}`, external: false },
   { label: 'Email', value: site.email, href: `mailto:${site.email}`, external: false },
 ];
 
